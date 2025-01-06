@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs.ResultsDTOs;
+using Domain.Entities;
 using System.Security.Claims;
 
 namespace Application.Interfaces.ServicesInterfaces

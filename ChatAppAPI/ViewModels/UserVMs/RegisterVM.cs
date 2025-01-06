@@ -1,5 +1,4 @@
 ﻿using Application.Validators;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ChatAppAPI.ViewModels.UserVMs
@@ -19,16 +18,16 @@ namespace ChatAppAPI.ViewModels.UserVMs
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
-        [PasswordPropertyText]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Confirm password is required.")]
-        [PasswordPropertyText]
+        [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password does not match.")]
         public string ConfirmedPassword { get; set; }
 
         [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif" })]
         [MaxFileSize(5 * 1024 * 1024)]
-        public IFormFile Photo { get; set; }
+        public IFormFile? Photo { get; set; }
     }
 }

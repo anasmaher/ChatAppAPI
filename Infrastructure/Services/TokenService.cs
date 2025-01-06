@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.ServicesInterfaces;
+﻿using Application.DTOs.ResultsDTOs;
+using Application.Interfaces.ServicesInterfaces;
 using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;

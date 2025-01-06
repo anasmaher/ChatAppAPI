@@ -1,6 +1,9 @@
-﻿using Application.Interfaces.ServicesInterfaces;
+﻿using Application.Interfaces.ReposInterfaces;
+using Application.Interfaces.ServicesInterfaces;
+using Application.Services;
 using Domain.Entities;
 using Infrastructure.Data;
+using Infrastructure.Repos;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,12 +26,15 @@ namespace Infrastructure.Extensions
             services.AddHostedService<TokenCleanupService>();
             services.AddSingleton<IFileStorageService, FileStorageService>();
             services.AddSingleton<IFileValidatorService, FileValidatorService>();
-
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            
             return services;
         }
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped<IUserService, UserService>();
+
             return services;
         }
     }

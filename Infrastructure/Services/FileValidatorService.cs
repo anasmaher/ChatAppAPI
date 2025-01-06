@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces.ServicesInterfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services
 {

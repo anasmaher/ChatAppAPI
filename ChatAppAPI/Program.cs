@@ -1,7 +1,14 @@
 using Application;
+using Application.Mappings;
+using ChatAppAPI.Filters;
+using ChatAppAPI.Mappings;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Reflection;
+using YourProject.WebAPI.Filters;
 
 namespace ChatAppAPI
 {
@@ -19,14 +26,42 @@ namespace ChatAppAPI
             builder.Services.AddInfrastructureServices();
 
             builder.Services.AddAuthenticationServices(builder.Configuration);
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<GenericResponseFilter>();
+            })
+            .ConfigureApiBehaviorOptions(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    // Collect validation errors
+                    string? errors = (context.ModelState
+                        .Where(ms => ms.Value.Errors.Count > 0)
+                        .Select(ms => ms.Value.Errors.Select(e => e.ErrorMessage))).ElementAt(0).ElementAt(0);
 
-            builder.Services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling =
+                    // Create your custom response
+                    var genericResponse = new
+                    {
+                        success = false,
+                        data = (object)null,
+                        message = "Validation failed.",
+                        errors = errors
+                    };
+
+                    return new BadRequestObjectResult(genericResponse);
+                };
+            })
+            .AddNewtonsoftJson(opts =>
+                opts.SerializerSettings.ReferenceLoopHandling =
                     Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
 
             builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddAuthorization();
+
+            builder.Services.AddAutoMapper(typeof(ViewModelToDtoProfile));
+            builder.Services.AddAutoMapper(typeof(DtoToEntityProfile));
 
             // Add caching
             builder.Services.AddOutputCache();

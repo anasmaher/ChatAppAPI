@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities
+﻿namespace Application.DTOs.ResultsDTOs
 {
     public class AuthenticationResult
     {

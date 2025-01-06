@@ -17,12 +17,10 @@ namespace Infrastructure.Configs
                .IsRequired();
 
             builder.Property(u => u.PhotoFilePath)
-               .HasMaxLength(500)
-               .IsRequired();
+               .HasMaxLength(500);
 
             builder.Property(u => u.RefreshToken)
-               .HasMaxLength(200)
-               .IsRequired();
+               .HasMaxLength(200);
         }
     }
 }
