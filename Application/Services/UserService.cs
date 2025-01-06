@@ -4,8 +4,7 @@ using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Text;
-using System.Text.Json;
+using System.Security.Claims;
 
 namespace Application.Services
 {
@@ -40,7 +39,7 @@ namespace Application.Services
                 return new ServiceResult(false, ["Incorrect data"]);
 
             // get tokens: access and refresh
-            var tokens = await tokenService.GenerateTokenAsync(user);
+            AuthenticationResult tokens = await tokenService.GenerateTokenAsync(user);
 
             return new ServiceResult(true, data: tokens);
         }
@@ -96,6 +95,41 @@ namespace Application.Services
                 return new ServiceResult(true);
             else
                 return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
+        }
+
+        public async Task<ServiceResult> UpdateUserAsync(string userId, UpdateUserDTO model)
+        {
+            // check user
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (string.IsNullOrWhiteSpace(userId) || user is null)
+                return new ServiceResult(false, ["User is not found"]);
+
+            // map and update
+            mapper.Map(model, user);
+            var res = await userManager.UpdateAsync(user);
+
+            // return result
+            if (res.Succeeded)
+            {
+                var userDTO = mapper.Map<UserDTO>(user);
+                return new ServiceResult(true, data: userDTO);
+            }
+            else
+                return new ServiceResult(false, ["Could not update info"]);
+        }
+
+        public async Task<ServiceResult> GetUserInfoAsync(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return new ServiceResult(false, ["User was not found"]);
+            else
+            {
+                var userDTO = mapper.Map<UserDTO>(user);
+                return new ServiceResult(true, data: userDTO);
+            }
         }
     }
 }

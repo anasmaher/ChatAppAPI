@@ -10,6 +10,7 @@ namespace ChatAppAPI.Mappings
         {
             CreateMap<RegisterVM, RegisterDTO>();
             CreateMap<LoginVM, LoginDTO>();
+            CreateMap<UpdateUserVM, UpdateUserDTO>();
 
             CreateMap<UserDTO, UserVM>();
         }

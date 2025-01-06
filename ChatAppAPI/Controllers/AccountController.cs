@@ -6,6 +6,7 @@ using ChatAppAPI.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace ChatAppAPI.Controllers
 {
@@ -55,12 +56,41 @@ namespace ChatAppAPI.Controllers
                 return BadRequest(res.Errors);
         }
 
-        [HttpPost("RemoveAccount")]
+        [HttpPost("Remove")]
         [Authorize]
-        public async Task<IActionResult> RemoveUser(LoginVM model)
+        public async Task<IActionResult> RemoveAccount(LoginVM model)
         {
             var userDTO = mapper.Map<LoginDTO>(model);
             var res = await userService.RemoveUserAsync(userDTO);
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+            else
+                return Ok(res.data);
+        }
+
+        [HttpPatch("UpdateInfo")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromForm]UpdateUserVM model)
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var UpdateUserDTO = mapper.Map<UpdateUserDTO>(model);
+
+            var res = await userService.UpdateUserAsync(userId, UpdateUserDTO);
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+            else
+                return Ok(res.data);
+        }
+
+        [HttpGet("GetInfo")]
+        [Authorize]
+        public async Task<IActionResult> GetInfo()
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await userService.GetUserInfoAsync(userId);
 
             if (!res.success)
                 return BadRequest(res.Errors);

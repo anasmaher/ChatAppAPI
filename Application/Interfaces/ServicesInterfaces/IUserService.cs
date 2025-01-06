@@ -10,5 +10,9 @@ namespace Application.Interfaces.ServicesInterfaces
         public Task<ServiceResult> LoginUserAsync(LoginDTO model);
 
         public Task<ServiceResult> RemoveUserAsync(LoginDTO model);
+
+        public Task<ServiceResult> UpdateUserAsync(string userId, UpdateUserDTO model);
+
+        public Task<ServiceResult> GetUserInfoAsync(string userId);
     }
 }
