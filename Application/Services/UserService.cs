@@ -33,14 +33,13 @@ namespace Application.Services
 
         public async Task<ServiceResult> LoginUserAsync(LoginDTO model)
         {
+            // check user
             var user = await userManager.FindByEmailAsync(model.Email);
 
-            if (user is null)
+            if (user is null || !await userManager.CheckPasswordAsync(user, model.Password))
                 return new ServiceResult(false, ["Incorrect data"]);
 
-            if (!await userManager.CheckPasswordAsync(user, model.Password))
-                return new ServiceResult(false, ["Incorrect data"]);
-
+            // get tokens: access and refresh
             var tokens = await tokenService.GenerateTokenAsync(user);
 
             return new ServiceResult(true, data: tokens);
@@ -48,6 +47,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> RegisterUserAsync(RegisterDTO model)
         {
+            // check user
             var existEmail = await userManager.FindByEmailAsync(model.Email);
             if (existEmail is not null)
                 return new ServiceResult(false, ["Email is taken"]);
@@ -66,7 +66,7 @@ namespace Application.Services
                 user.PhotoFilePath = photoPath;
             }
             
-            // Create user
+            // create user
             var res = await userManager.CreateAsync(user, model.Password);
 
             if (res.Succeeded)
@@ -81,9 +81,21 @@ namespace Application.Services
                 return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
 
-        //public async Task<bool> RemoveUserAsync(LoginDTO model)
-        //{
-        //    var 
-        //}
+        public async Task<ServiceResult> RemoveUserAsync(LoginDTO model)
+        {
+            // check user
+            var user = await userManager.FindByEmailAsync(model.Email);
+
+            if (user is null || !await userManager.CheckPasswordAsync(user, model.Password)) 
+                return new ServiceResult(false, ["Incorrect data"]);
+
+            // delete user
+            var res = await userManager.DeleteAsync(user);
+
+            if (res.Succeeded)
+                return new ServiceResult(true);
+            else
+                return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
+        }
     }
 }

@@ -14,8 +14,7 @@ namespace ChatAppAPI.Filters
                 success = false,
                 data = (object)null,
                 message = "An unexpected error occurred.",
-                // Optionally include exception details in development
-                // detail = context.Exception.Message
+
             };
 
             context.Result = new ObjectResult(genericResponse)

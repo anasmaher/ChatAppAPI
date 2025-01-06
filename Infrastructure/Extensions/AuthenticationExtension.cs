@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace Infrastructure.Extensions
 {
@@ -62,7 +63,7 @@ namespace Infrastructure.Extensions
                         }
 
                         var user = await userManager.FindByIdAsync(userId);
-                        if (user == null || user.TokenVersion != tokenVersion)
+                        if (user is null || user.TokenVersion != tokenVersion)
                         {
                             context.Fail("Token is no longer valid.");
                             return;
@@ -84,7 +85,46 @@ namespace Infrastructure.Extensions
                             context.Fail("Token has been revoked.");
                             return;
                         }
+                    },
+                    
+                    // for generic response for 401
+                    OnChallenge = async context =>
+                    {
+                        // Skip the default logic.
+                        context.HandleResponse();
+
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var genericResponse = new
+                        {
+                            success = false,
+                            data = (object)null,
+                            message = "Unauthorized access.",
+                            errors = "User is not authenticated."
+                        };
+
+                        var json = JsonSerializer.Serialize(genericResponse);
+                        await context.Response.WriteAsync(json);
+                    },
+
+                    OnForbidden = async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                        context.Response.ContentType = "application/json";
+
+                        var genericResponse = new
+                        {
+                            success = false,
+                            data = (object)null,
+                            message = "Forbidden access.",
+                            errors = "User does not have permission to access this resource."
+                        };
+
+                        var json = JsonSerializer.Serialize(genericResponse);
+                        await context.Response.WriteAsync(json);
                     }
+
                 };
             })
             // Add Cookie authentication for external login (Google)

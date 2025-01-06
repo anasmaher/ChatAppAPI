@@ -1,13 +1,9 @@
-using Application;
 using Application.Mappings;
-using ChatAppAPI.Filters;
 using ChatAppAPI.Mappings;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Reflection;
 using YourProject.WebAPI.Filters;
 
 namespace ChatAppAPI
@@ -26,6 +22,8 @@ namespace ChatAppAPI
             builder.Services.AddInfrastructureServices();
 
             builder.Services.AddAuthenticationServices(builder.Configuration);
+
+            // Custom response
             builder.Services.AddControllers(options =>
             {
                 options.Filters.Add<GenericResponseFilter>();
@@ -35,9 +33,9 @@ namespace ChatAppAPI
                 options.InvalidModelStateResponseFactory = context =>
                 {
                     // Collect validation errors
-                    string? errors = (context.ModelState
+                    List<string> errors = context.ModelState
                         .Where(ms => ms.Value.Errors.Count > 0)
-                        .Select(ms => ms.Value.Errors.Select(e => e.ErrorMessage))).ElementAt(0).ElementAt(0);
+                        .SelectMany(ms => ms.Value.Errors.Select(e => e.ErrorMessage)).ToList();
 
                     // Create your custom response
                     var genericResponse = new
@@ -60,6 +58,7 @@ namespace ChatAppAPI
 
             builder.Services.AddAuthorization();
 
+            // auto mapping
             builder.Services.AddAutoMapper(typeof(ViewModelToDtoProfile));
             builder.Services.AddAutoMapper(typeof(DtoToEntityProfile));
 
@@ -71,6 +70,7 @@ namespace ChatAppAPI
                 options.TokenLifespan = TimeSpan.FromHours(3);  // Token is valid for 3 hours
             });
 
+            // max file size
             builder.Services.Configure<FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 5 * 1024 * 1024; // 5 MB

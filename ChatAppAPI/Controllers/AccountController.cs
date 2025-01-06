@@ -54,5 +54,18 @@ namespace ChatAppAPI.Controllers
             else
                 return BadRequest(res.Errors);
         }
+
+        [HttpPost("RemoveAccount")]
+        [Authorize]
+        public async Task<IActionResult> RemoveUser(LoginVM model)
+        {
+            var userDTO = mapper.Map<LoginDTO>(model);
+            var res = await userService.RemoveUserAsync(userDTO);
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+            else
+                return Ok(res.data);
+        }
     }
 }

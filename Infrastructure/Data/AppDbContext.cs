@@ -17,6 +17,8 @@ namespace Infrastructure.Data
             // Apply all configurations from the current assembly
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
+            modelBuilder.Ignore<EmailMetadata>();
+
             base.OnModelCreating(modelBuilder);
         }
 
