@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 
 namespace ChatAppAPI
@@ -33,6 +34,11 @@ namespace ChatAppAPI
             builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
                 options.TokenLifespan = TimeSpan.FromHours(3);  // Token is valid for 3 hours
+            });
+
+            builder.Services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 5 * 1024 * 1024; // 5 MB
             });
 
             // Configure CORS to allow specific origin and credentials

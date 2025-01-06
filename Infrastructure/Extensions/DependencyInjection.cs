@@ -15,19 +15,20 @@ namespace Infrastructure.Extensions
             services.AddDbContext<AppDbContext>(options =>
                 options.UseLazyLoadingProxies().UseSqlServer(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")));
 
-            services.AddHostedService<TokenCleanupService>();
-
             services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddHostedService<TokenCleanupService>();
+            services.AddSingleton<IFileStorageService, FileStorageService>();
+            services.AddSingleton<IFileValidatorService, FileValidatorService>();
 
             return services;
         }
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<ITokenService, TokenService>();
-
             return services;
         }
     }

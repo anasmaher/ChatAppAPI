@@ -8,6 +8,8 @@ namespace Domain.Entities
 
         public string LastName { get; set; }
 
+        public string PhotoFilePath { get; set; }
+
         public int TokenVersion { get; set; } = 1;
 
         public string? RefreshToken { get; set; }
