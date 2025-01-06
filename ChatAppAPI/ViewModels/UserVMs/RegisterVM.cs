@@ -15,15 +15,18 @@ namespace ChatAppAPI.ViewModels.UserVMs
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage ="Email address is not valid.")]
+        [MaxLength(100)]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
         [DataType(DataType.Password)]
+        [MaxLength(100)]
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Confirm password is required.")]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Password does not match.")]
+        [MaxLength(100)]
         public string ConfirmedPassword { get; set; }
 
         [AllowedExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif" })]

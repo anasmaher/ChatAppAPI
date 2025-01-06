@@ -9,6 +9,9 @@ namespace ChatAppAPI.Mappings
         public ViewModelToDtoProfile()
         {
             CreateMap<RegisterVM, RegisterDTO>();
+            CreateMap<LoginVM, LoginDTO>();
+
+            CreateMap<UserDTO, UserVM>();
         }
     }
 }

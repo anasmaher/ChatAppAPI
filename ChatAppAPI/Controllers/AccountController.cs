@@ -22,7 +22,7 @@ namespace ChatAppAPI.Controllers
             this.mapper = mapper;
         }
 
-        [HttpPost]
+        [HttpPost("Register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromForm]RegisterVM model)
         {
@@ -35,10 +35,24 @@ namespace ChatAppAPI.Controllers
             if (res.success)
             {
                 var userVM = mapper.Map<UserVM>(res.data);
+
                 return Ok(userVM);
             }
             else
-                return BadRequest(res.Error);
+                return BadRequest(res.Errors);
+        }
+
+        [HttpPost("Login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginVM model)
+        {
+            var userDTO = mapper.Map<LoginDTO>(model);
+            var res = await userService.LoginUserAsync(userDTO);
+
+            if (res.success)
+                return Ok(res.data);
+            else
+                return BadRequest(res.Errors);
         }
     }
 }

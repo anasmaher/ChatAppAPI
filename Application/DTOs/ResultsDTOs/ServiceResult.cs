@@ -2,14 +2,14 @@
 {
     public class ServiceResult
     {
-        public readonly string? Error;
+        public readonly List<string>? Errors;
         public readonly object? data;
         public readonly bool success;
 
-        public ServiceResult(bool success, string? Error = null, object? data = null)
+        public ServiceResult(bool success, List<string>? Errors = null, object? data = null)
         {
             this.success = success;
-            this.Error = Error;
+            this.Errors = Errors;
             this.data = data;
         }
     }

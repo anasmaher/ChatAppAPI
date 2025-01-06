@@ -8,10 +8,9 @@ namespace Application.Mappings
     {
         public DtoToEntityProfile()
         {
-            CreateMap<RegisterDTO, AppUser>()
-                .ForMember(dest => dest.PhotoFilePath, opt => opt.Ignore());
+            CreateMap<RegisterDTO, AppUser>();
 
-            CreateMap<AppUser, RegisterDTO>();
+            CreateMap<AppUser, UserDTO>();
         }
     }
 }

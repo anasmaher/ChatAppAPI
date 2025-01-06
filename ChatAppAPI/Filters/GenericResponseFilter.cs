@@ -85,7 +85,8 @@ namespace YourProject.WebAPI.Filters
                 401 => "Unauthorized access.",
                 403 => "Forbidden.",
                 404 => "Resource not found.",
-                500 => "An error occurred on the server."            
+                500 => "An error occurred on the server.",
+                _ => "Operation failed"
             };
         }
     }
