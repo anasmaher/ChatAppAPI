@@ -8,5 +8,7 @@ namespace Application.Interfaces.ServicesInterfaces
         public Task<ServiceResult> RegisterUserAsync(RegisterDTO model);
 
         public Task<ServiceResult> LoginUserAsync(LoginDTO model);
+
+        public Task<bool> RemoveUserAsync(LoginDTO model);
     }
 }

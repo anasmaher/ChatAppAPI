@@ -36,7 +36,10 @@ namespace Application.Services
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user is null)
-                return new ServiceResult(false, ["User was not found"]);
+                return new ServiceResult(false, ["Incorrect data"]);
+
+            if (!await userManager.CheckPasswordAsync(user, model.Password))
+                return new ServiceResult(false, ["Incorrect data"]);
 
             var tokens = await tokenService.GenerateTokenAsync(user);
 
@@ -77,5 +80,10 @@ namespace Application.Services
             else
                 return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
+
+        //public async Task<bool> RemoveUserAsync(LoginDTO model)
+        //{
+        //    var 
+        //}
     }
 }
