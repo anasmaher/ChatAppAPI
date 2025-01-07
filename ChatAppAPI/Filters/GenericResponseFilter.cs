@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace YourProject.WebAPI.Filters
+namespace ChatApp.ChatAppAPI.Filters
 {
     public class GenericResponseFilter : IAsyncActionFilter
     {
@@ -15,6 +15,16 @@ namespace YourProject.WebAPI.Filters
             // After the action executes
 
             IActionResult originalResult = executedContext.Result;
+
+            if (originalResult is ChallengeResult ||
+            originalResult is RedirectResult ||
+            originalResult is SignInResult ||
+            originalResult is ForbidResult ||
+            originalResult is SignOutResult)
+            {
+                return;
+            }
+
             int? statusCode = (originalResult as IStatusCodeActionResult)?.StatusCode;
 
             object originalValue = null;

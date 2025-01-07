@@ -12,7 +12,7 @@ namespace Application.Mappings
             CreateMap<UpdateUserDTO, AppUser>()
                 .ForAllMembers(opts => opts.Condition((src, dst, srcMember) => srcMember is not null));
 
-            CreateMap<AppUser, UserDTO>();
+            CreateMap<AppUser, UserDTO>().ReverseMap();
         }
     }
 }

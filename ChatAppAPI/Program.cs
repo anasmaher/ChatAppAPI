@@ -4,7 +4,7 @@ using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using YourProject.WebAPI.Filters;
+using ChatApp.ChatAppAPI.Filters;
 
 namespace ChatAppAPI
 {
@@ -17,9 +17,9 @@ namespace ChatAppAPI
             var jwtSettings = builder.Configuration.GetSection("JWT");
 
             // Add services to the container.
-            builder.Services.AddApplicationServices();
-
             builder.Services.AddInfrastructureServices();
+
+            builder.Services.AddApplicationServices();
 
             builder.Services.AddAuthenticationServices(builder.Configuration);
 
@@ -56,8 +56,6 @@ namespace ChatAppAPI
 
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddAuthorization();
-
             // auto mapping
             builder.Services.AddAutoMapper(typeof(ViewModelToDtoProfile));
             builder.Services.AddAutoMapper(typeof(DtoToEntityProfile));
@@ -81,7 +79,7 @@ namespace ChatAppAPI
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("http://192.168.1.7:5000")
+                    builder.WithOrigins("")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials(); // Allow cookies
@@ -106,6 +104,10 @@ namespace ChatAppAPI
                 app.UseSwaggerUI(c => {
                     c.DisplayRequestDuration();
                 });
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app.UseHttpsRedirection();

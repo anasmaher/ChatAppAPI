@@ -68,11 +68,10 @@ namespace Infrastructure.Services
                 user.RefreshToken = refreshToken;
                 user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(int.Parse(config["JWT:DurationInMinutes"]));
 
-                await userManager.UpdateAsync(user);
-
                 result.RefreshToken = refreshToken;
             }
 
+            
             await StoreTokenAsync(user.Id, tokenId, DateTime.UtcNow.AddMinutes(int.Parse(config["JWT:DurationInMinutes"])));
 
             return result;
@@ -118,6 +117,7 @@ namespace Infrastructure.Services
                 ExpirationTime = expirationTime,
                 Revoked = false
             };
+
             _dbContext.Tokens.Add(token);
             await _dbContext.SaveChangesAsync();
         }

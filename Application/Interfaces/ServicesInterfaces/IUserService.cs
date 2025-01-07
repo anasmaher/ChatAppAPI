@@ -24,5 +24,7 @@ namespace Application.Interfaces.ServicesInterfaces
         public Task<ServiceResult> LogOutSingleAsync(string userId, string token);
 
         public Task<ServiceResult> LogOutAllAsync(string userId);
+
+        public Task<ServiceResult> GetOrCreateExternalUserAsync(string userEmail, string userName, string userId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.ServicesInterfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -130,7 +131,7 @@ namespace Infrastructure.Extensions
             // Add Cookie authentication for external login (Google)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                options.LoginPath = "/api/Account/LoginGoogle"; // Set the login path for initiating Google login
+                options.LoginPath = "/api/ExternalAuth/GoogleLogin"; // Set the login path for initiating Google login
                 options.Events.OnRedirectToLogin = context =>
                 {
                     // Return 401 instead of redirecting to the login page
@@ -144,7 +145,7 @@ namespace Infrastructure.Extensions
                     return Task.CompletedTask;
                 };
             })
-            .AddGoogle(options =>
+            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
             {
                 options.ClientId = Environment.GetEnvironmentVariable("ClientId")
                     ?? throw new InvalidOperationException("Google ClientId not found in environment variables.");

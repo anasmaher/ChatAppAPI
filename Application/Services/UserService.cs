@@ -5,6 +5,7 @@ using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Emit;
+using System.Xml.Linq;
 
 namespace Application.Services
 {
@@ -233,9 +234,28 @@ namespace Application.Services
             return new ServiceResult(true, data: "Logged out on current device only");
         }
 
-        public async Task<ServiceResult> LoginGoogle()
+        public async Task<ServiceResult> GetOrCreateExternalUserAsync(string userEmail, string userName, string userId)
         {
+            var user = await userManager.FindByEmailAsync(userEmail);
 
+            if (user is null)
+            {
+                user = new AppUser
+                {
+                    UserName = userEmail,
+                    Email = userEmail,
+                    FirstName = userName.Split(' ')[0] ?? "First",
+                    LastName = userName.Split(" ")[1] ?? "Last"
+                };
+
+                var res = await userManager.CreateAsync(user);
+                if (!res.Succeeded)
+                    return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
+
+                await userManager.AddToRoleAsync(user, "User");
+            }
+          
+            return new ServiceResult(true, data: user);
         }
     }
 }
