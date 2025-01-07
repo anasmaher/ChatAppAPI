@@ -5,6 +5,7 @@ using AutoMapper;
 using ChatAppAPI.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Security.Claims;
 
@@ -30,8 +31,8 @@ namespace ChatAppAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userDTO = mapper.Map<RegisterDTO>(model);
-            var res = await userService.RegisterUserAsync(userDTO);
+            var modelDTO = mapper.Map<RegisterDTO>(model);
+            var res = await userService.RegisterUserAsync(modelDTO);
 
             if (res.success)
             {
@@ -39,49 +40,58 @@ namespace ChatAppAPI.Controllers
 
                 return Ok(userVM);
             }
-            else
-                return BadRequest(res.Errors);
+            
+            return BadRequest(res.Errors);
         }
 
         [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginVM model)
         {
-            var userDTO = mapper.Map<LoginDTO>(model);
-            var res = await userService.LoginUserAsync(userDTO);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<LoginDTO>(model);
+            var res = await userService.LoginUserAsync(modelDTO);
 
             if (res.success)
                 return Ok(res.data);
-            else
-                return BadRequest(res.Errors);
+            
+            return BadRequest(res.Errors);
         }
 
         [HttpPost("Remove")]
         [Authorize]
         public async Task<IActionResult> RemoveAccount(LoginVM model)
         {
-            var userDTO = mapper.Map<LoginDTO>(model);
-            var res = await userService.RemoveUserAsync(userDTO);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<LoginDTO>(model);
+            var res = await userService.RemoveUserAsync(modelDTO);
 
             if (!res.success)
                 return BadRequest(res.Errors);
-            else
-                return Ok(res.data);
+            
+            return Ok(res.data);
         }
 
         [HttpPatch("UpdateInfo")]
         [Authorize]
         public async Task<IActionResult> UpdateInfo([FromForm]UpdateUserVM model)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var UpdateUserDTO = mapper.Map<UpdateUserDTO>(model);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var res = await userService.UpdateUserAsync(userId, UpdateUserDTO);
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var modelDTO = mapper.Map<UpdateUserDTO>(model);
+
+            var res = await userService.UpdateUserAsync(userId, modelDTO);
 
             if (!res.success)
                 return BadRequest(res.Errors);
-            else
-                return Ok(res.data);
+            
+            return Ok(res.data);
         }
 
         [HttpGet("GetInfo")]
@@ -94,8 +104,42 @@ namespace ChatAppAPI.Controllers
 
             if (!res.success)
                 return BadRequest(res.Errors);
-            else
+
+            return Ok(res.data);
+        }
+
+        [HttpPost("ForgotPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<ForgotPasswordDTO>(model);
+
+            var res = await userService.ForgotPasswordAsync(modelDTO);
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+            
+            return Ok(res.data);
+        }
+
+        [HttpPost("ResetPassword")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVM model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<ResetPasswordDTO>(model);
+
+            var res = await userService.ResetPasswordAsync(modelDTO);
+
+            if (res.success)
                 return Ok(res.data);
+
+            return BadRequest(res.Errors);
         }
     }
 }

@@ -81,7 +81,7 @@ namespace ChatAppAPI
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("")
+                    builder.WithOrigins("http://192.168.1.7:5000")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials(); // Allow cookies

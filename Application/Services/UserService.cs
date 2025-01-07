@@ -4,7 +4,7 @@ using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using System.Reflection.Emit;
 
 namespace Application.Services
 {
@@ -15,24 +15,29 @@ namespace Application.Services
         private readonly IFileStorageService fileStorageService;
         private readonly IFileValidatorService fileValidatorService;
         private readonly ITokenService tokenService;
+        private readonly IEmailService emailService;
+        private readonly IUrlService urlService;
 
         public UserService(
             UserManager<AppUser> userManager,
             IMapper mapper,
             IFileStorageService fileStorageService,
             IFileValidatorService fileValidatorService, 
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IEmailService emailService,
+            IUrlService urlService)
         {
             this.userManager = userManager;
             this.mapper = mapper;
             this.fileStorageService = fileStorageService;
             this.fileValidatorService = fileValidatorService;
             this.tokenService = tokenService;
+            this.emailService = emailService;
+            this.urlService = urlService;
         }
 
         public async Task<ServiceResult> LoginUserAsync(LoginDTO model)
         {
-            // check user
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user is null || !await userManager.CheckPasswordAsync(user, model.Password))
@@ -46,7 +51,6 @@ namespace Application.Services
 
         public async Task<ServiceResult> RegisterUserAsync(RegisterDTO model)
         {
-            // check user
             var existEmail = await userManager.FindByEmailAsync(model.Email);
             if (existEmail is not null)
                 return new ServiceResult(false, ["Email is taken"]);
@@ -65,7 +69,6 @@ namespace Application.Services
                 user.PhotoFilePath = photoPath;
             }
             
-            // create user
             var res = await userManager.CreateAsync(user, model.Password);
 
             if (res.Succeeded)
@@ -82,13 +85,11 @@ namespace Application.Services
 
         public async Task<ServiceResult> RemoveUserAsync(LoginDTO model)
         {
-            // check user
             var user = await userManager.FindByEmailAsync(model.Email);
 
             if (user is null || !await userManager.CheckPasswordAsync(user, model.Password)) 
                 return new ServiceResult(false, ["Incorrect data"]);
 
-            // delete user
             var res = await userManager.DeleteAsync(user);
 
             if (res.Succeeded)
@@ -99,7 +100,6 @@ namespace Application.Services
 
         public async Task<ServiceResult> UpdateUserAsync(string userId, UpdateUserDTO model)
         {
-            // check user
             var user = await userManager.FindByIdAsync(userId);
 
             if (string.IsNullOrWhiteSpace(userId) || user is null)
@@ -109,7 +109,6 @@ namespace Application.Services
             mapper.Map(model, user);
             var res = await userManager.UpdateAsync(user);
 
-            // return result
             if (res.Succeeded)
             {
                 var userDTO = mapper.Map<UserDTO>(user);
@@ -130,6 +129,54 @@ namespace Application.Services
                 var userDTO = mapper.Map<UserDTO>(user);
                 return new ServiceResult(true, data: userDTO);
             }
+        }
+
+        public async Task<ServiceResult> ForgotPasswordAsync(ForgotPasswordDTO model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+
+            if (user is null)
+                return new ServiceResult(true, ["An email was sent to your email if it's registered"]);
+
+            // get resetpassword token and url sent to user's email
+            string resetPasswordToken = await userManager.GeneratePasswordResetTokenAsync(user);
+            string resetUrl = urlService.GenerateResetPasswordUrl(resetPasswordToken);
+
+            // send email
+            try
+            {
+                EmailMetadata emailMetadata = new(
+                    model.Email,
+                    "Reset password",
+                    $"Reset your password using this link: <a href='{resetUrl}'>Reset Password</a>"
+                );
+
+                emailService.SendEmailAsync(emailMetadata);
+                return new ServiceResult(true, data: "An email was sent to your email if it's registered");
+            }
+            catch
+            {
+                return new ServiceResult(false, ["Could not send an email"]);
+            }
+        }
+
+        public async Task<ServiceResult> ResetPasswordAsync(ResetPasswordDTO model)
+        {
+            var user = await userManager.FindByEmailAsync(model.Email);
+
+            var res = await userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+            if (res.Succeeded)
+            {
+                // logout all devices
+                user.TokenVersion++;
+
+                await userManager.UpdateAsync(user);
+
+                return new ServiceResult(true);
+            }
+
+            return new ServiceResult(false, ["Could not reset password"]);
         }
     }
 }

@@ -14,5 +14,9 @@ namespace Application.Interfaces.ServicesInterfaces
         public Task<ServiceResult> UpdateUserAsync(string userId, UpdateUserDTO model);
 
         public Task<ServiceResult> GetUserInfoAsync(string userId);
+
+        public Task<ServiceResult> ForgotPasswordAsync(ForgotPasswordDTO model);
+
+        public Task<ServiceResult> ResetPasswordAsync(ResetPasswordDTO model);
     }
 }

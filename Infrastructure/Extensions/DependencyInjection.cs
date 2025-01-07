@@ -27,7 +27,9 @@ namespace Infrastructure.Extensions
             services.AddSingleton<IFileStorageService, FileStorageService>();
             services.AddSingleton<IFileValidatorService, FileValidatorService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddTransient<IUrlService, UrlService>();
+
             return services;
         }
 
