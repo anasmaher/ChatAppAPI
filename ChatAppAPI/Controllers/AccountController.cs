@@ -141,5 +141,23 @@ namespace ChatAppAPI.Controllers
 
             return BadRequest(res.Errors);
         }
+
+        [HttpPost("ChangePassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<ChangePasswordDTO>(model);
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await userService.ChangePasswordAsync(userId, modelDTO);
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+
+            return Ok(res.data);
+        }
     }
 }

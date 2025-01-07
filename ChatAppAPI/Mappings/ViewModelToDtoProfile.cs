@@ -13,6 +13,7 @@ namespace ChatAppAPI.Mappings
             CreateMap<UpdateUserVM, UpdateUserDTO>();
             CreateMap<ForgotPasswordVM, ForgotPasswordDTO>();
             CreateMap<ResetPasswordVM, ResetPasswordDTO>();
+            CreateMap<ChangePasswordVM, ChangePasswordDTO>();
 
             CreateMap<UserDTO, UserVM>();
         }

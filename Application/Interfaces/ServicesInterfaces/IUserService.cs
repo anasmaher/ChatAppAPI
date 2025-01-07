@@ -18,5 +18,7 @@ namespace Application.Interfaces.ServicesInterfaces
         public Task<ServiceResult> ForgotPasswordAsync(ForgotPasswordDTO model);
 
         public Task<ServiceResult> ResetPasswordAsync(ResetPasswordDTO model);
+
+        public Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordDTO model);
     }
 }

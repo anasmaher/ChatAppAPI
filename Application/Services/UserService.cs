@@ -93,7 +93,7 @@ namespace Application.Services
             var res = await userManager.DeleteAsync(user);
 
             if (res.Succeeded)
-                return new ServiceResult(true);
+                return new ServiceResult(true, data: "Acount removed");
             else
                 return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
@@ -177,6 +177,25 @@ namespace Application.Services
             }
 
             return new ServiceResult(false, ["Could not reset password"]);
+        }
+
+        public async Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordDTO model)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null || !await userManager.CheckPasswordAsync(user, model.OldPassword))
+                return new ServiceResult(false, ["Incorrect password"]);
+
+            var res = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+
+            if (!res.Succeeded)
+                return new ServiceResult(false, ["Could not change password"]);
+
+            user.TokenVersion++;
+            await userManager.UpdateAsync(user);
+
+            return new ServiceResult(true, data: "Password changed");
         }
     }
 }
