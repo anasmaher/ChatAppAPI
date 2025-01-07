@@ -6,6 +6,7 @@ using ChatAppAPI.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 
@@ -54,10 +55,10 @@ namespace ChatAppAPI.Controllers
             var modelDTO = mapper.Map<LoginDTO>(model);
             var res = await userService.LoginUserAsync(modelDTO);
 
-            if (res.success)
-                return Ok(res.data);
-            
-            return BadRequest(res.Errors);
+            if (!res.success)
+                return Unauthorized(res.Errors);
+
+            return Ok(res.data);
         }
 
         [HttpPost("Remove")]
@@ -71,7 +72,12 @@ namespace ChatAppAPI.Controllers
             var res = await userService.RemoveUserAsync(modelDTO);
 
             if (!res.success)
+            {
+                if (res.Errors.Contains("Incorrect data"))
+                    return Unauthorized(res.Errors);
+
                 return BadRequest(res.Errors);
+            }
             
             return Ok(res.data);
         }
@@ -89,7 +95,12 @@ namespace ChatAppAPI.Controllers
             var res = await userService.UpdateUserAsync(userId, modelDTO);
 
             if (!res.success)
+            {
+                if (res.Errors.Contains("User is not found"))
+                    return NotFound(res.Errors);
+
                 return BadRequest(res.Errors);
+            }
             
             return Ok(res.data);
         }
@@ -103,7 +114,7 @@ namespace ChatAppAPI.Controllers
             var res = await userService.GetUserInfoAsync(userId);
 
             if (!res.success)
-                return BadRequest(res.Errors);
+                return NotFound(res.Errors);
 
             return Ok(res.data);
         }
@@ -153,6 +164,45 @@ namespace ChatAppAPI.Controllers
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var res = await userService.ChangePasswordAsync(userId, modelDTO);
+
+            if (!res.success)
+            {
+                if (res.Errors.Contains("Incorrect password"))
+                    return Unauthorized(res.Errors);
+
+                return BadRequest(res.Errors);
+            }
+
+            return Ok(res.data);
+        }
+
+        [HttpPost("LogOutSingle")]
+        [Authorize]
+        public async Task<IActionResult> LogOutSingle()
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? token = User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+
+            var res = await userService.LogOutSingleAsync(userId, token);
+
+            if (!res.success)
+            {
+                if (res.Errors.Contains("Token is invalid"))
+                    return Unauthorized(res.Errors);
+
+                return BadRequest(res.Errors);
+            }
+
+            return Ok(res.data);
+        }
+
+        [HttpPost("LogOutAll")]
+        [Authorize]
+        public async Task<IActionResult> LogOutAll()
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await userService.LogOutAllAsync(userId);
 
             if (!res.success)
                 return BadRequest(res.Errors);

@@ -93,7 +93,7 @@ namespace Application.Services
             var res = await userManager.DeleteAsync(user);
 
             if (res.Succeeded)
-                return new ServiceResult(true, data: "Acount removed");
+                return new ServiceResult(true, data: "Account removed");
             else
                 return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
@@ -115,7 +115,7 @@ namespace Application.Services
                 return new ServiceResult(true, data: userDTO);
             }
             else
-                return new ServiceResult(false, ["Could not update info"]);
+                return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
 
         public async Task<ServiceResult> GetUserInfoAsync(string userId)
@@ -154,9 +154,9 @@ namespace Application.Services
                 emailService.SendEmailAsync(emailMetadata);
                 return new ServiceResult(true, data: "An email was sent to your email if it's registered");
             }
-            catch
+            catch (Exception ex)
             {
-                return new ServiceResult(false, ["Could not send an email"]);
+                return new ServiceResult(false, [ex.Message]);
             }
         }
 
@@ -176,7 +176,7 @@ namespace Application.Services
                 return new ServiceResult(true);
             }
 
-            return new ServiceResult(false, ["Could not reset password"]);
+            return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
         }
 
         public async Task<ServiceResult> ChangePasswordAsync(string userId, ChangePasswordDTO model)
@@ -190,12 +190,52 @@ namespace Application.Services
 
 
             if (!res.Succeeded)
-                return new ServiceResult(false, ["Could not change password"]);
+                return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
 
+            // logout all devices
             user.TokenVersion++;
             await userManager.UpdateAsync(user);
 
             return new ServiceResult(true, data: "Password changed");
+        }
+
+        public async Task<ServiceResult> LogOutAllAsync(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return new ServiceResult(false, ["User was not found"]);
+
+            // change token version to invalid all tokens
+            user.TokenVersion++;
+            await userManager.UpdateAsync(user);
+
+            return new ServiceResult(true, data: "Logged out on all devices");
+        }
+
+        public async Task<ServiceResult> LogOutSingleAsync(string userId, string token)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return new ServiceResult(false, ["User was not found"]);
+
+            if (token is null)
+                return new ServiceResult(false, ["Token is invalid"]);
+
+            // revoke current device token and refresh token
+            await tokenService.RevokeTokenAsync(token);
+            user.RefreshToken = null;
+            user.RefreshTokenExpiryTime = DateTime.Now;
+
+            await userManager.UpdateAsync(user);
+
+            return new ServiceResult(true, data: "Logged out on current device only");
+        }
+
+        public async Task<ServiceResult> LoginGoogle()
+        {
+
         }
     }
 }
