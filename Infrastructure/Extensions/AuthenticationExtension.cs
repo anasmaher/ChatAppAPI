@@ -21,9 +21,14 @@ namespace Infrastructure.Extensions
         {
             var jwtSettings = configuration.GetSection("JWT");
 
-            // Clear default claims mapping
-            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            // Read the signing key from environment variables
+            var signingKey = Environment.GetEnvironmentVariable("Key")
+                ?? throw new InvalidOperationException("JWT signing key not found in environment variables.");
 
+            // Ensure that the default claim type mappings are preserved
+            // Do not clear the default inbound claim type map
+
+            // Configure JWT Bearer authentication
             services.AddAuthentication(options =>
             {
                 // Set default schemes for authentication and challenge
@@ -31,7 +36,7 @@ namespace Infrastructure.Extensions
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             // Add JWT Bearer authentication
-            .AddJwtBearer(options =>
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters()
@@ -41,10 +46,8 @@ namespace Infrastructure.Extensions
                     ValidateLifetime = true,
                     ValidIssuer = jwtSettings["Issuer"],
                     ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                        Environment.GetEnvironmentVariable("Key")
-                        ?? throw new InvalidOperationException("JWT signing key not found in environment variables."))),
-                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+                    NameClaimType = ClaimTypes.NameIdentifier, // Ensure standard claim types are used
                     RoleClaimType = ClaimTypes.Role
                 };
 
@@ -56,6 +59,12 @@ namespace Infrastructure.Extensions
                         var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<AppUser>>();
                         var userId = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
                         var tokenVersionClaim = context.Principal.FindFirst("TokenVersion")?.Value;
+
+                        if (string.IsNullOrEmpty(userId))
+                        {
+                            context.Fail("User ID claim not found.");
+                            return;
+                        }
 
                         if (!int.TryParse(tokenVersionClaim, out var tokenVersion))
                         {
@@ -87,8 +96,8 @@ namespace Infrastructure.Extensions
                             return;
                         }
                     },
-                    
-                    // for generic response for 401
+
+                    // Custom response for unauthorized access (401)
                     OnChallenge = async context =>
                     {
                         // Skip the default logic.
@@ -109,6 +118,7 @@ namespace Infrastructure.Extensions
                         await context.Response.WriteAsync(json);
                     },
 
+                    // Custom response for forbidden access (403)
                     OnForbidden = async context =>
                     {
                         context.Response.StatusCode = StatusCodes.Status403Forbidden;
@@ -125,11 +135,10 @@ namespace Infrastructure.Extensions
                         var json = JsonSerializer.Serialize(genericResponse);
                         await context.Response.WriteAsync(json);
                     }
-
                 };
             })
             // Add Cookie authentication for external login (Google)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            .AddCookie("ExternalCookie", options =>
             {
                 options.LoginPath = "/api/ExternalAuth/GoogleLogin"; // Set the login path for initiating Google login
                 options.Events.OnRedirectToLogin = context =>
@@ -145,16 +154,18 @@ namespace Infrastructure.Extensions
                     return Task.CompletedTask;
                 };
             })
-            .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+            .AddGoogle(options =>
             {
+                // Read Google ClientId and ClientSecret from environment variables
                 options.ClientId = Environment.GetEnvironmentVariable("ClientId")
                     ?? throw new InvalidOperationException("Google ClientId not found in environment variables.");
+
                 options.ClientSecret = Environment.GetEnvironmentVariable("ClientSecret")
                     ?? throw new InvalidOperationException("Google ClientSecret not found in environment variables.");
 
                 options.Scope.Add("profile");
                 options.SaveTokens = true;
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Use cookies for sign-in
+                options.SignInScheme = "ExternalCookie"; // Use the external cookie scheme for sign-in
             });
 
             services.AddAuthorization();

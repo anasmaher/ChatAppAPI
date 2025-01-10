@@ -13,15 +13,20 @@ namespace Infrastructure.Services
             _environment = environment;
         }
 
+        public async Task DeleteFile(string path)
+        {
+            File.Delete("wwwroot/" + path);
+        }
+
         public async Task<string> SaveFileAsync(IFormFile file)
         {
             // Generate unique file name
             var extension = Path.GetExtension(file.FileName);
             var uniqueFileName = $"{Guid.NewGuid()}{extension}";
-
             // Set file storage path
             var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "photos");
             Directory.CreateDirectory(uploadsFolder);
+
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             // Save file

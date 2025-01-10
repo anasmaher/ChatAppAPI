@@ -79,10 +79,10 @@ namespace ChatAppAPI
             {
                 options.AddPolicy("AllowSpecificOrigin", builder =>
                 {
-                    builder.WithOrigins("")
-                           .AllowAnyHeader()
-                           .AllowAnyMethod()
-                           .AllowCredentials(); // Allow cookies
+                    builder.WithOrigins("http://localhost:44385")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 
@@ -121,6 +121,8 @@ namespace ChatAppAPI
 
             app.UseOutputCache();
 
+            app.UseStaticFiles();
+
             app.MapControllers();
 
             app.Run();
@@ -129,7 +131,7 @@ namespace ChatAppAPI
         public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var roles = new[] { "Admin", "User" };
+            var roles = new[] { "Owner", "Admin", "User" };
 
             foreach (var role in roles)
             {

@@ -8,7 +8,7 @@ namespace Domain.Entities
 
         public string LastName { get; set; }
 
-        public string PhotoFilePath { get; set; }
+        public string PhotoFilePath { get; set; } = "wwwroot/uploads/photos/defaultPhoto.png";
 
         public int TokenVersion { get; set; } = 1;
 

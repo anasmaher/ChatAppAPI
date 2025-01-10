@@ -1,4 +1,5 @@
-﻿using Application.DTOs.UserDTOs;
+﻿using Application.DTOs.ForAdminDTOs;
+using Application.DTOs.UserDTOs;
 using AutoMapper;
 using Domain.Entities;
 
@@ -13,6 +14,7 @@ namespace Application.Mappings
                 .ForAllMembers(opts => opts.Condition((src, dst, srcMember) => srcMember is not null));
 
             CreateMap<AppUser, UserDTO>().ReverseMap();
+            CreateMap<AppUser, UserForAdminDTO>();
         }
     }
 }

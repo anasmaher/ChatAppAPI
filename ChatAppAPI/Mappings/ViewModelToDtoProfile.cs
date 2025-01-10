@@ -1,5 +1,7 @@
-﻿using Application.DTOs.UserDTOs;
+﻿using Application.DTOs.ForAdminDTOs;
+using Application.DTOs.UserDTOs;
 using AutoMapper;
+using ChatAppAPI.ViewModels.ForAdminVMs;
 using ChatAppAPI.ViewModels.UserVMs;
 
 namespace ChatAppAPI.Mappings
@@ -14,6 +16,7 @@ namespace ChatAppAPI.Mappings
             CreateMap<ForgotPasswordVM, ForgotPasswordDTO>();
             CreateMap<ResetPasswordVM, ResetPasswordDTO>();
             CreateMap<ChangePasswordVM, ChangePasswordDTO>();
+            CreateMap<ChangeRoleVM, ChangeRoleDTO>();
 
             CreateMap<UserDTO, UserVM>();
         }

@@ -1,13 +1,10 @@
-﻿using Application.DTOs.ResultsDTOs;
-using Application.DTOs.UserDTOs;
+﻿using Application.DTOs.UserDTOs;
 using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;
 using ChatAppAPI.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 
 namespace ChatAppAPI.Controllers
@@ -36,11 +33,8 @@ namespace ChatAppAPI.Controllers
             var res = await userService.RegisterUserAsync(modelDTO);
 
             if (res.success)
-            {
-                var userVM = mapper.Map<UserVM>(res.data);
-
-                return Ok(userVM);
-            }
+                return Ok(res.data);
+            
             
             return BadRequest(res.Errors);
         }
@@ -61,7 +55,7 @@ namespace ChatAppAPI.Controllers
             return Ok(res.data);
         }
 
-        [HttpPost("Remove")]
+        [HttpDelete("Remove")]
         [Authorize]
         public async Task<IActionResult> RemoveAccount(LoginVM model)
         {

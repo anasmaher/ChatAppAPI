@@ -4,6 +4,7 @@ using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Xml.Linq;
 
@@ -74,7 +75,11 @@ namespace Application.Services
 
             if (res.Succeeded)
             {
-                await userManager.AddToRoleAsync(user, "User");
+
+                if (model.Email == "anas.elhorigy@gmail.com")
+                    await userManager.AddToRoleAsync(user, "Owner");
+                else
+                    await userManager.AddToRoleAsync(user, "User");
 
                 var userDTO = mapper.Map<UserDTO>(user);
 
@@ -90,6 +95,9 @@ namespace Application.Services
 
             if (user is null || !await userManager.CheckPasswordAsync(user, model.Password)) 
                 return new ServiceResult(false, ["Incorrect data"]);
+
+            if (user.PhotoFilePath != "wwwroot/uploads/photos/defaultPhoto.png")
+                await fileStorageService.DeleteFile(user.PhotoFilePath);
 
             var res = await userManager.DeleteAsync(user);
 
@@ -108,6 +116,20 @@ namespace Application.Services
 
             // map and update
             mapper.Map(model, user);
+
+            if (model.Photo is not null)
+            {
+                if (!fileValidatorService.IsValidFileSignature(model.Photo))
+                    return new ServiceResult(false, ["Photo is not valid"]);
+
+                if (user.PhotoFilePath != "wwwroot/uploads/photos/defaultPhoto.png")
+                    await fileStorageService.DeleteFile(user.PhotoFilePath);
+
+                var photoPath = await fileStorageService.SaveFileAsync(model.Photo);
+
+                user.PhotoFilePath = photoPath;
+            }
+
             var res = await userManager.UpdateAsync(user);
 
             if (res.Succeeded)
@@ -128,6 +150,7 @@ namespace Application.Services
             else
             {
                 var userDTO = mapper.Map<UserDTO>(user);
+
                 return new ServiceResult(true, data: userDTO);
             }
         }
@@ -252,9 +275,12 @@ namespace Application.Services
                 if (!res.Succeeded)
                     return new ServiceResult(false, res.Errors.Select(x => x.Description).ToList());
 
-                await userManager.AddToRoleAsync(user, "User");
+                if (user.Email == "anas.elhorigy@gmail.com")
+                    await userManager.AddToRolesAsync(user, ["Owner", "Admin"]);
+                else
+                    await userManager.AddToRoleAsync(user, "User");
             }
-          
+
             return new ServiceResult(true, data: user);
         }
     }
