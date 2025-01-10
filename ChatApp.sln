@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatAppAPI", "ChatAppAPI\ChatAppAPI.csproj", "{277E2868-5B90-45E0-B12F-28CE76B83595}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAppAPI", "ChatAppAPI\ChatAppAPI.csproj", "{277E2868-5B90-45E0-B12F-28CE76B83595}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{B574253D-B87E-4A86-A16A-468A8731AE08}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{B574253D-B87E-4A86-A16A-468A8731AE08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{11C95055-B23B-4291-9B74-CE5D149B54FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{11C95055-B23B-4291-9B74-CE5D149B54FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{36D2758F-ACC9-435B-B2C9-65FC1C2DAFA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{36D2758F-ACC9-435B-B2C9-65FC1C2DAFA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{2BA20DDC-5A5B-443E-BBDB-C9DFED544948}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{36D2758F-ACC9-435B-B2C9-65FC1C2DAFA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36D2758F-ACC9-435B-B2C9-65FC1C2DAFA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36D2758F-ACC9-435B-B2C9-65FC1C2DAFA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BA20DDC-5A5B-443E-BBDB-C9DFED544948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA20DDC-5A5B-443E-BBDB-C9DFED544948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA20DDC-5A5B-443E-BBDB-C9DFED544948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA20DDC-5A5B-443E-BBDB-C9DFED544948}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
