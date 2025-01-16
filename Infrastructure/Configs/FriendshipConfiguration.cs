@@ -15,17 +15,17 @@ namespace Infrastructure.Configs
             builder.HasOne(f => f.User1)
                 .WithMany()
                 .HasForeignKey(f => f.User1Id)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(f => f.User2)
                 .WithMany()
                 .HasForeignKey(f => f.User2Id)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(f => f.ActionUser)
                 .WithMany()
                 .HasForeignKey(f => f.ActionUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
 
             // Enforce Unique Constraint on UserId1 and UserId2
             builder.HasIndex(f => new { f.User1Id, f.User2Id })

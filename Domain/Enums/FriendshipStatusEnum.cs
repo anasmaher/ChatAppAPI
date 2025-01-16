@@ -4,8 +4,6 @@
     {
         Pending,
         Accepted,
-        Declined,
-        Blocked,
-        Removed
+        Declined
     }
 }
