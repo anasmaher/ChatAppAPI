@@ -1,9 +1,10 @@
 ﻿namespace Domain.Enums
 {
-    public enum FriendshipStatusEnum
+    public enum RelationshipStatusEnum
     {
         Pending,
         Accepted,
-        Declined
+        Declined,
+        Blocked
     }
 }

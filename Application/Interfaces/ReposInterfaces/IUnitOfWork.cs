@@ -2,6 +2,8 @@
 {
     public interface IUnitOfWork
     {
-        Task<int> CommitAsync();
+        IUserRelationshipRepo UserRelationships { get; }
+
+        Task CommitAsync();
     }
 }

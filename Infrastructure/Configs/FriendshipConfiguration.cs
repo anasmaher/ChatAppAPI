@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Configs
 {
-    public class FriendshipConfiguration : IEntityTypeConfiguration<Friendship>
+    public class FriendshipConfiguration : IEntityTypeConfiguration<UserRelationship>
     {
-        public void Configure(EntityTypeBuilder<Friendship> builder)
+        public void Configure(EntityTypeBuilder<UserRelationship> builder)
         {
             // Define Primary Key
             builder.HasKey(f => f.Id);

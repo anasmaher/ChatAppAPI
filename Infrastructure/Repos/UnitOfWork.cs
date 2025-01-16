@@ -6,17 +6,17 @@ namespace Infrastructure.Repos
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext dbContext;
-        public IFriendshipRepo FriendshipRepo { get; }
+        public IUserRelationshipRepo UserRelationships { get; private set; }
 
-        public UnitOfWork(AppDbContext dbContext)
+        public UnitOfWork(AppDbContext dbContext, IUserRelationshipRepo userRelationshipRepo)
         {
             this.dbContext = dbContext;
-            
+            this.UserRelationships = userRelationshipRepo;
         }
 
-        public async Task<int> CommitAsync()
+        public async Task CommitAsync()
         {
-            return await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
     }
 }

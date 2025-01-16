@@ -2,7 +2,7 @@
 
 namespace Domain.Entities
 {
-    public class Friendship
+    public class UserRelationship
     {
         public int Id { get; set; }
 
@@ -12,8 +12,8 @@ namespace Domain.Entities
         public string User2Id { get; set; }
         public virtual AppUser User2 { get; set; }
 
-        public FriendshipStatusEnum Status { get; set; }
-        public DateOnly CreatedDate { get; set; }
+        public RelationshipStatusEnum Status { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public string ActionUserId { get; set; }
         public virtual AppUser ActionUser { get; set; }

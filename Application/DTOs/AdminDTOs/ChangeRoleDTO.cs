@@ -1,4 +1,4 @@
-﻿namespace Application.DTOs.ForAdminDTOs
+﻿namespace Application.DTOs.AdminDTOs
 {
     public class ChangeRoleDTO
     {

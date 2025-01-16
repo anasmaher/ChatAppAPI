@@ -22,7 +22,7 @@ namespace ChatAppAPI.Controllers
             this.mapper = mapper;
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromForm]RegisterVM model)
         {
@@ -39,7 +39,7 @@ namespace ChatAppAPI.Controllers
             return BadRequest(res.Errors);
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginVM model)
         {
@@ -55,65 +55,7 @@ namespace ChatAppAPI.Controllers
             return Ok(res.data);
         }
 
-        [HttpDelete("Remove")]
-        [Authorize]
-        public async Task<IActionResult> RemoveAccount(LoginVM model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var modelDTO = mapper.Map<LoginDTO>(model);
-            var res = await userService.RemoveUserAsync(modelDTO);
-
-            if (!res.success)
-            {
-                if (res.Errors.Contains("Incorrect data"))
-                    return Unauthorized(res.Errors);
-
-                return BadRequest(res.Errors);
-            }
-            
-            return Ok(res.data);
-        }
-
-        [HttpPatch("UpdateInfo")]
-        [Authorize]
-        public async Task<IActionResult> UpdateInfo([FromForm]UpdateUserVM model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var modelDTO = mapper.Map<UpdateUserDTO>(model);
-
-            var res = await userService.UpdateUserAsync(userId, modelDTO);
-
-            if (!res.success)
-            {
-                if (res.Errors.Contains("User is not found"))
-                    return NotFound(res.Errors);
-
-                return BadRequest(res.Errors);
-            }
-            
-            return Ok(res.data);
-        }
-
-        [HttpGet("GetInfo")]
-        [Authorize]
-        public async Task<IActionResult> GetInfo()
-        {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var res = await userService.GetUserInfoAsync(userId);
-
-            if (!res.success)
-                return NotFound(res.Errors);
-
-            return Ok(res.data);
-        }
-
-        [HttpPost("ForgotPassword")]
+        [HttpPost("forgot-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordVM model)
         {
@@ -126,11 +68,11 @@ namespace ChatAppAPI.Controllers
 
             if (!res.success)
                 return BadRequest(res.Errors);
-            
+
             return Ok(res.data);
         }
 
-        [HttpPost("ResetPassword")]
+        [HttpPost("reset-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordVM model)
         {
@@ -147,7 +89,7 @@ namespace ChatAppAPI.Controllers
             return BadRequest(res.Errors);
         }
 
-        [HttpPost("ChangePassword")]
+        [HttpPost("change-password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordVM model)
         {
@@ -170,7 +112,7 @@ namespace ChatAppAPI.Controllers
             return Ok(res.data);
         }
 
-        [HttpPost("LogOutSingle")]
+        [HttpPost("logout-single")]
         [Authorize]
         public async Task<IActionResult> LogOutSingle()
         {
@@ -190,7 +132,7 @@ namespace ChatAppAPI.Controllers
             return Ok(res.data);
         }
 
-        [HttpPost("LogOutAll")]
+        [HttpPost("logout-all")]
         [Authorize]
         public async Task<IActionResult> LogOutAll()
         {
@@ -201,6 +143,64 @@ namespace ChatAppAPI.Controllers
             if (!res.success)
                 return BadRequest(res.Errors);
 
+            return Ok(res.data);
+        }
+
+        [HttpGet("get-info")]
+        [Authorize]
+        public async Task<IActionResult> GetInfo()
+        {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await userService.GetUserInfoAsync(userId);
+
+            if (!res.success)
+                return NotFound(res.Errors);
+
+            return Ok(res.data);
+        }
+
+        [HttpPatch("update-info")]
+        [Authorize]
+        public async Task<IActionResult> UpdateInfo([FromForm] UpdateUserVM model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var modelDTO = mapper.Map<UpdateUserDTO>(model);
+
+            var res = await userService.UpdateUserAsync(userId, modelDTO);
+
+            if (!res.success)
+            {
+                if (res.Errors.Contains("User is not found"))
+                    return NotFound(res.Errors);
+
+                return BadRequest(res.Errors);
+            }
+
+            return Ok(res.data);
+        }
+
+        [HttpDelete("remove")]
+        [Authorize]
+        public async Task<IActionResult> RemoveAccount(LoginVM model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var modelDTO = mapper.Map<LoginDTO>(model);
+            var res = await userService.RemoveUserAsync(modelDTO);
+
+            if (!res.success)
+            {
+                if (res.Errors.Contains("Incorrect data"))
+                    return Unauthorized(res.Errors);
+
+                return BadRequest(res.Errors);
+            }
+            
             return Ok(res.data);
         }
     }

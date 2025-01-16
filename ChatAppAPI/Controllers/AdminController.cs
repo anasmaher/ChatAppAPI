@@ -1,4 +1,4 @@
-﻿using Application.DTOs.ForAdminDTOs;
+﻿using Application.DTOs.AdminDTOs;
 using Application.Interfaces.ServicesInterfaces;
 using Application.Services;
 using AutoMapper;
@@ -24,19 +24,7 @@ namespace ChatAppAPI.Controllers
             this.adminService = adminService;
         }
 
-
-        [HttpGet("GetAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var res = await adminService.GetAllUsersAsync();
-
-            if (!res.success)
-                return BadRequest(res.Errors);
-
-            return Ok(res.data);
-        }
-
-        [HttpPost("ChangeRole/{id}")]
+        [HttpPost("change-role/{id}")]
         [Authorize(Roles = "Owner")]
         public async Task<IActionResult> ChangeRole(string id, ChangeRoleVM model)
         {
@@ -54,7 +42,18 @@ namespace ChatAppAPI.Controllers
             return Ok(res.data);
         }
 
-        [HttpDelete("DeleteUser/{id}")]
+        [HttpGet("get-all-users")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var res = await adminService.GetAllUsersAsync();
+
+            if (!res.success)
+                return BadRequest(res.Errors);
+
+            return Ok(res.data);
+        }
+
+        [HttpDelete("delete-user/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var res = await adminService.RemoveUserAdminAsync(id);

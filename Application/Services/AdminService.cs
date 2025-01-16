@@ -1,4 +1,4 @@
-﻿using Application.DTOs.ForAdminDTOs;
+﻿using Application.DTOs.AdminDTOs;
 using Application.DTOs.ResultsDTOs;
 using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;

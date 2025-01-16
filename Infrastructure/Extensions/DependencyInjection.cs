@@ -13,6 +13,16 @@ namespace Infrastructure.Extensions
 {
     public static class DependencyInjection
     {
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IUserRelationshipService, UserRelationshipService>();
+            services.AddScoped<IUserRelationshipRepo, UserRelationshipRepo>();
+
+            return services;
+        }
+
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options =>
@@ -29,16 +39,10 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddTransient<IUrlService, UrlService>();
-            
-            return services;
-        }
-
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-        {
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAdminService, AdminService>();
 
             return services;
         }
+
+        
     }
 }
