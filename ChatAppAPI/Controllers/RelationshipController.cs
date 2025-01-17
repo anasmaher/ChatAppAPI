@@ -84,11 +84,11 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-requests")]
-        public async Task<IActionResult> GetFriendRequests()
+        public async Task<IActionResult> GetFriendRequests(int pageNubmer, int pageSize)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var res = await relationshipService.GetFriendRequestsAsync(userId);
+            var res = await relationshipService.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
 
             if (!res.success)
                 return BadRequest(res.data);
@@ -97,11 +97,11 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-friends")]
-        public async Task<IActionResult> GetFriends()
+        public async Task<IActionResult> GetFriends(int pageNubmer, int pageSize)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var res = await relationshipService.GetFriendsAsync(userId);
+            var res = await relationshipService.GetFriendsAsync(userId, pageNubmer, pageSize);
 
             if (!res.success)
                 return BadRequest(res.data);
@@ -110,11 +110,11 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-blocked-users")]
-        public async Task<IActionResult> GetBlockedUsers()
+        public async Task<IActionResult> GetBlockedUsers(int pageNubmer, int pageSize)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var res = await relationshipService.GetBlockedUsers(userId);
+            var res = await relationshipService.GetBlockedUsers(userId, pageNubmer, pageSize);
 
             if (!res.success)
                 return BadRequest(res.data);

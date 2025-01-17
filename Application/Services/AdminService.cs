@@ -62,9 +62,12 @@ namespace Application.Services
             return new ServiceResult(false, res.Errors.Select(e => e.Description).ToList());
         }
 
-        public async Task<ServiceResult> GetAllUsersAsync()
+        public async Task<ServiceResult> GetAllUsersAsync(int pageNubmer, int pageSize)
         {
-            var users = userManager.Users.ToList();
+            var users = userManager.Users
+                .Skip(pageSize * (pageNubmer - 1))
+                .Take(pageSize)
+                .ToList();
             
             var usersForAdminDTO = mapper.Map<IEnumerable<UserForAdminDTO>>(users);
             foreach (var item in usersForAdminDTO)

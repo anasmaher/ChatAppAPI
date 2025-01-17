@@ -52,18 +52,18 @@ namespace Application.Services
             return new ServiceResult(true, data: "User was blocked");
         }
 
-        public async Task<ServiceResult> GetFriendRequestsAsync(string userId)
+        public async Task<ServiceResult> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize)
         {
-            var requests = await unitOfWork.UserRelationships.GetFriendRequestsAsync(userId);
+            var requests = await unitOfWork.UserRelationships.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
 
             var requestsDTO = mapper.Map<IEnumerable<FriendRequestDTO>>(requests);
 
             return new ServiceResult(true, data: requestsDTO);
         }
 
-        public async Task<ServiceResult> GetFriendsAsync(string userId)
+        public async Task<ServiceResult> GetFriendsAsync(string userId, int pageNubmer, int pageSize)
         {
-            var friends = await unitOfWork.UserRelationships.GetFriendsAsync(userId);
+            var friends = await unitOfWork.UserRelationships.GetFriendsAsync(userId, pageNubmer, pageSize);
 
             var friendsDTO = mapper.Map<List<RelationMemberDTO>>(friends, opts =>
             {
@@ -173,9 +173,9 @@ namespace Application.Services
             return new ServiceResult(true, data: "User was Unblocked");
         }
 
-        public async Task<ServiceResult> GetBlockedUsers(string userId)
+        public async Task<ServiceResult> GetBlockedUsers(string userId, int pageNubmer, int pageSize)
         {
-            var blockedUsers = await unitOfWork.UserRelationships.GetBlockedUsersAsync(userId);
+            var blockedUsers = await unitOfWork.UserRelationships.GetBlockedUsersAsync(userId, pageNubmer, pageSize);
 
             var blockedUsersDTO = mapper.Map<List<RelationMemberDTO>>(blockedUsers, opts =>
             {

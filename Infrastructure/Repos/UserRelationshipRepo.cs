@@ -3,6 +3,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 using Utilities;
 
 namespace Infrastructure.Repos
@@ -16,20 +17,24 @@ namespace Infrastructure.Repos
             this.dbContext = dbContext;
         }
 
-        public async Task<List<UserRelationship>> GetFriendRequestsAsync(string userId)
+        public async Task<List<UserRelationship>> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize)
         {
             var friendRequests = await dbContext.Friendships
                 .Include(f => f.ActionUser)
                 .Where(f => f.Status == RelationshipStatusEnum.Pending && f.User2Id == userId)
+                .Skip(pageSize * (pageNubmer - 1))
+                .Take(pageSize)
                 .ToListAsync();
 
             return friendRequests;
         }
 
-        public async Task<List<UserRelationship>> GetFriendsAsync(string userId)
+        public async Task<List<UserRelationship>> GetFriendsAsync(string userId, int pageNubmer, int pageSize)
         {
             var friends = await dbContext.Friendships
                 .Where(f => f.Status == RelationshipStatusEnum.Accepted && (f.User1Id == userId || f.User2Id == userId))
+                .Skip(pageSize * (pageNubmer - 1))
+                .Take(pageSize)
                 .ToListAsync();
 
             return friends;
@@ -45,10 +50,12 @@ namespace Infrastructure.Repos
             return friendship;
         }
 
-        public async Task<List<UserRelationship>> GetBlockedUsersAsync(string userId)
+        public async Task<List<UserRelationship>> GetBlockedUsersAsync(string userId, int pageNubmer, int pageSize)
         {
             var blockedUsers = await dbContext.Friendships
                 .Where(f => f.Status == RelationshipStatusEnum.Blocked && (f.User1Id == userId || f.User2Id == userId))
+                .Skip(pageSize * (pageNubmer - 1))
+                .Take(pageSize)
                 .ToListAsync();
 
             return blockedUsers;

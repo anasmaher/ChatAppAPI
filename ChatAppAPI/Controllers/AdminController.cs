@@ -43,9 +43,9 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-all-users")]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(int pageNubmer, int pageSize)
         {
-            var res = await adminService.GetAllUsersAsync();
+            var res = await adminService.GetAllUsersAsync(pageNubmer, pageSize);
 
             if (!res.success)
                 return BadRequest(res.Errors);

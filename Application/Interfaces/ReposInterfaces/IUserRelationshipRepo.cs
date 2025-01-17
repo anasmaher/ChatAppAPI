@@ -7,10 +7,10 @@ namespace Application.Interfaces.ReposInterfaces
     {
         Task<UserRelationship> GetFriendshipAsync(string userId1, string userId2);
 
-        Task<List<UserRelationship>> GetFriendRequestsAsync(string userId);
+        Task<List<UserRelationship>> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize);
 
-        Task<List<UserRelationship>> GetFriendsAsync(string userId);
+        Task<List<UserRelationship>> GetFriendsAsync(string userId, int pageNubmer, int pageSize);
 
-        Task<List<UserRelationship>> GetBlockedUsersAsync(string userId);
+        Task<List<UserRelationship>> GetBlockedUsersAsync(string userId, int pageNubmer, int pageSize);
     }
 }

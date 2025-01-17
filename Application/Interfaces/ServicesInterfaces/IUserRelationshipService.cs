@@ -10,9 +10,9 @@ namespace Application.Interfaces.ServicesInterfaces
 
         Task<ServiceResult> RespondToFriendRequestAsync(int requestId, string responderUserId, string action);
 
-        Task<ServiceResult> GetFriendRequestsAsync(string userId);
+        Task<ServiceResult> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize);
 
-        Task<ServiceResult> GetFriendsAsync(string userId);
+        Task<ServiceResult> GetFriendsAsync(string userId, int pageNubmer, int pageSize);
 
         Task<ServiceResult> RemoveFriendAsync(string userId, string friendUserId);
 
@@ -20,6 +20,6 @@ namespace Application.Interfaces.ServicesInterfaces
 
         Task<ServiceResult> UnblockUserAsync(string userId, string blockedUserId);
 
-        Task<ServiceResult> GetBlockedUsers(string userId);
+        Task<ServiceResult> GetBlockedUsers(string userId, int pageNubmer, int pageSize);
     }
 }
