@@ -24,6 +24,7 @@ namespace Infrastructure.Repos
                 .Where(f => f.Status == RelationshipStatusEnum.Pending && f.User2Id == userId)
                 .Skip(pageSize * (pageNubmer - 1))
                 .Take(pageSize)
+                .OrderByDescending(f => f.CreatedAt)
                 .ToListAsync();
 
             return friendRequests;
