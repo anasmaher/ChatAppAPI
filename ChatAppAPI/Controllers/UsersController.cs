@@ -12,13 +12,12 @@ namespace ChatAppAPI.Controllers
 {
     [Route("api/Admin")]
     [ApiController]
-    [Authorize(Roles = "Owner,Admin")]
-    public class AdminController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IMapper mapper;
         private readonly IAdminService adminService;
 
-        public AdminController( IMapper mapper, IAdminService adminService)
+        public UsersController( IMapper mapper, IAdminService adminService)
         {
             this.mapper = mapper;
             this.adminService = adminService;
@@ -43,7 +42,8 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-all-users")]
-        public async Task<IActionResult> GetAllUsers(int pageNubmer, int pageSize)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllUsers(int pageNubmer = 1, int pageSize = 10)
         {
             var res = await adminService.GetAllUsersAsync(pageNubmer, pageSize);
 
@@ -54,6 +54,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpDelete("delete-user/{id}")]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var res = await adminService.RemoveUserAdminAsync(id);

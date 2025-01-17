@@ -7,6 +7,7 @@ namespace Infrastructure.Repos
     {
         private readonly AppDbContext dbContext;
         public IUserRelationshipRepo UserRelationships { get; private set; }
+        public INotificationRepo NotificationRepo { get; private set; }
 
         public UnitOfWork(AppDbContext dbContext, IUserRelationshipRepo userRelationshipRepo)
         {

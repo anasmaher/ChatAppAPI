@@ -1,0 +1,54 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm Model="loginModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="loginModel.Email" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <InputPassword @bind-Value="loginModel.Password" />
+    </div>
+    <button type="submit">Login</button>
+</EditForm>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private string ErrorMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        var success = await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
+        if (success)
+        {
+            // Redirect to the friends page
+            NavigationManager.NavigateTo("/friends");
+        }
+        else
+        {
+            ErrorMessage = "Invalid login attempt.";
+        }
+    }
+
+    public class LoginModel
+    {
+        [Required]
+        public string Email { get; set; }
+
+        [Required]
+        public string Password { get; set; }
+    }
+}

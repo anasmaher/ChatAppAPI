@@ -1,0 +1,33 @@
+﻿@inject NotificationService NotificationService
+
+@if (!string.IsNullOrEmpty(NotificationMessage))
+{
+    <div class="alert alert-info">
+        @NotificationMessage
+    </div>
+}
+
+@code {
+    private string NotificationMessage;
+
+    protected override void OnInitialized()
+    {
+        NotificationService.OnFriendRequestReceived += (message) =>
+        {
+            NotificationMessage = message;
+            InvokeAsync(StateHasChanged);
+        };
+
+        NotificationService.OnFriendRequestAccepted += (message) =>
+        {
+            NotificationMessage = message;
+            InvokeAsync(StateHasChanged);
+        };
+    }
+
+    public void Dispose()
+    {
+        NotificationService.OnFriendRequestReceived -= (message) => { };
+        NotificationService.OnFriendRequestAccepted -= (message) => { };
+    }
+}

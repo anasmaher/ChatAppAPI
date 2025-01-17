@@ -88,7 +88,7 @@ namespace ChatAppAPI.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var res = await relationshipService.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
+            var res = await relationshipService.GetFriendRequestsAsync(userId, pageNubmer = 1, pageSize = 10);
 
             if (!res.success)
                 return BadRequest(res.data);
@@ -97,7 +97,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-friends")]
-        public async Task<IActionResult> GetFriends(int pageNubmer, int pageSize)
+        public async Task<IActionResult> GetFriends(int pageNubmer = 1, int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -110,7 +110,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-blocked-users")]
-        public async Task<IActionResult> GetBlockedUsers(int pageNubmer, int pageSize)
+        public async Task<IActionResult> GetBlockedUsers(int pageNubmer = 1, int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

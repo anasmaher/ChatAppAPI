@@ -1,0 +1,49 @@
+﻿@page "/friends"
+@using System.Net.Http.Headers
+@inject HttpClient HttpClient
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h3>Your Friends</h3>
+
+@if (friends == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var friend in friends)
+        {
+            <li>@friend.Username</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<FriendDto> friends;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await AuthService.GetTokenAsync();
+        if (string.IsNullOrEmpty(token))
+        {
+            // Not authenticated, redirect to login
+            NavigationManager.NavigateTo("/login");
+            return;
+        }
+
+        // Add the token to the authorization header
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Make the API call
+        friends = await HttpClient.GetFromJsonAsync<List<FriendDto>>("api/Relationship/get-friends");
+    }
+
+    public class FriendDto
+    {
+        public string UserId { get; set; }
+        public string Username { get; set; }
+        public DateTime FriendshipDate { get; set; }
+    }
+}

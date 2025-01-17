@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ChatApp.ChatAppAPI.Filters;
+using ChatAppAPI.Hubs;
 
 namespace ChatAppAPI
 {
@@ -22,6 +23,12 @@ namespace ChatAppAPI
             builder.Services.AddApplicationServices();
 
             builder.Services.AddAuthenticationServices(builder.Configuration);
+
+            builder.Services.AddSignalR(hubOptions => {
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(10);
+                hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(5);
+            });
 
             // Custom response
             builder.Services.AddControllers(options =>
@@ -75,16 +82,7 @@ namespace ChatAppAPI
             });
 
             // Configure CORS to allow specific origin and credentials
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin", builder =>
-                {
-                    builder.WithOrigins("http://localhost:44385")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
-            });
+            
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -114,7 +112,7 @@ namespace ChatAppAPI
 
             app.UseRouting();
 
-            app.UseCors("AllowSpecificOrigin"); // Apply the CORS policy
+            //app.UseCors("AllowSpecificOrigin"); // Apply the CORS policy
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -124,6 +122,8 @@ namespace ChatAppAPI
             app.UseStaticFiles();
 
             app.MapControllers();
+            app.MapHub<ChatHub>("/Application/Hubs/ChatHub");
+            app.MapFallbackToFile("index.html");
 
             app.Run();
         }

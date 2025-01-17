@@ -19,6 +19,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IUserRelationshipService, UserRelationshipService>();
             services.AddScoped<IUserRelationshipRepo, UserRelationshipRepo>();
+            services.AddScoped<INotificationRepo, NotificationRepo>();
 
             return services;
         }
@@ -39,6 +40,7 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddTransient<IUrlService, UrlService>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             return services;
         }

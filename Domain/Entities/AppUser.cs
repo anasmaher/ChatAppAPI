@@ -16,5 +16,7 @@ namespace Domain.Entities
 
         public DateTime RefreshTokenExpiryTime { get; set; }
 
+        public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
+
     }
 }

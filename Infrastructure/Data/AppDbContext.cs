@@ -25,5 +25,6 @@ namespace Infrastructure.Data
         public DbSet<AppUser> Users { get; set; }
         public DbSet<TokenModel> Tokens { get; set; }
         public DbSet<UserRelationship> Friendships { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
     }
 }

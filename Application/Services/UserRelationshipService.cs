@@ -13,11 +13,13 @@ namespace Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly INotificationService notificationService;
 
-        public UserRelationshipService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserRelationshipService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.notificationService = notificationService;
         }
 
         public async Task<ServiceResult> BlockUserAsync(string userId, string blockedUserId)
@@ -104,7 +106,28 @@ namespace Application.Services
                 relationship.ActionUserId = responderUserId;
 
                 unitOfWork.UserRelationships.Update(relationship);
+
+                var senderUserId = relationship.User1Id == responderUserId ? relationship.User2Id : relationship.User1Id;
+                var notification = new Notification
+                {
+                    UserId = senderUserId,
+                    SenderUserId = responderUserId,
+                    Type = NotificationEnum.FriendRequestAccepted,
+                    Message = "Your friend request was accepted.",
+                    CreatedDate = DateTime.UtcNow,
+                    IsRead = false
+                };
+                await unitOfWork.NotificationRepo.AddAsync(notification);
                 await unitOfWork.CommitAsync();
+
+                try
+                {
+                    await notificationService.SendFriendRequestAcceptedNotificationAsync(senderUserId, responderUserId);
+                }
+                catch (Exception ex)
+                {
+                    //logger
+                }
 
                 return new ServiceResult(true, data: "Request was accepted");
             }
@@ -153,7 +176,27 @@ namespace Application.Services
             };
 
             await unitOfWork.UserRelationships.AddAsync(friendship);
+
+            var notification = new Notification
+            {
+                UserId = recipientUserId,
+                SenderUserId = senderUserId,
+                Type = NotificationEnum.FriendRequestReceived,
+                Message = "You have received a friend request.",
+                CreatedDate = DateTime.UtcNow,
+                IsRead = false
+            };
+            await unitOfWork.NotificationRepo.AddAsync(notification);
             await unitOfWork.CommitAsync();
+
+            try
+            {
+                await notificationService.SendFriendRequestNotificationAsync(recipientUserId, senderUserId);
+            }
+            catch (Exception ex)
+            {
+                //logger
+            }
 
             return new ServiceResult(true, data: "Request was sent");
         }

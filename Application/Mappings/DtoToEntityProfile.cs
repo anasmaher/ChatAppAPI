@@ -1,5 +1,6 @@
 ﻿using Application.DTOs.AdminDTOs;
 using Application.DTOs.RelationshipDTOs;
+using Application.DTOs.SignalrDTOs;
 using Application.DTOs.UserDTOs;
 using AutoMapper;
 using Domain.Entities;
@@ -40,6 +41,9 @@ namespace Application.Mappings
                     var currentUserId = context.Items["CurrentUserId"] as string;
                     return src.User1Id != currentUserId ? src.User1.LastName : src.User2.LastName;
                 }));
+
+            CreateMap<Notification, NotificationDTO>()
+                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName));
         }
     }
 }

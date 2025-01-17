@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Configs
+namespace Infrastructure.Data.Configs
 {
     public class FriendshipConfiguration : IEntityTypeConfiguration<UserRelationship>
     {

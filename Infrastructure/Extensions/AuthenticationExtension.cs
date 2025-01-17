@@ -134,6 +134,20 @@ namespace Infrastructure.Extensions
 
                         var json = JsonSerializer.Serialize(genericResponse);
                         await context.Response.WriteAsync(json);
+                    },
+
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for the SignalR hub
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
                     }
                 };
             })
