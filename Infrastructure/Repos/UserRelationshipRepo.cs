@@ -20,7 +20,6 @@ namespace Infrastructure.Repos
         public async Task<List<UserRelationship>> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize)
         {
             var friendRequests = await dbContext.Friendships
-                .Include(f => f.ActionUser)
                 .Where(f => f.Status == RelationshipStatusEnum.Pending && f.User2Id == userId)
                 .Skip(pageSize * (pageNubmer - 1))
                 .Take(pageSize)

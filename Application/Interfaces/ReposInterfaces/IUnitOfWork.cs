@@ -2,7 +2,7 @@
 {
     public interface IUnitOfWork
     {
-        IUserRelationshipRepo UserRelationships { get; }
+        IUserRelationshipRepo UserRelationshipRepo { get; }
         INotificationRepo NotificationRepo { get; }
 
         Task CommitAsync();

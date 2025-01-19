@@ -18,10 +18,10 @@ namespace Infrastructure.Repos
 
         public async Task<List<Notification>> GetNotificationsAsync(string userId, int pageNumber, int pageSize)
         {
-            var nots = await dbContext.Notifications.Where(n =>  n.UserId == userId)
-                .Skip(pageNumber * (pageSize - 1))
+            var nots = await dbContext.Notifications.Where(n => n.UserId == userId)
+                .Skip(pageSize * (pageNumber - 1))
                 .Take(pageSize)
-                .OrderByDescending(n => n.CreatedDate)
+                .OrderByDescending(n => n.CreatedDate)  
                 .ToListAsync();
 
             return nots;

@@ -14,8 +14,7 @@ public class NotificationService : IAsyncDisposable
     public NotificationService(AuthService authService, NavigationManager navigationManager)
     {
         _authService = authService;
-
-        var hubUrl = navigationManager.ToAbsoluteUri("/Application/Hubs/ChatHub");
+        var hubUrl = "https://localhost:43385/hubs/ChatHub";
 
         _hubConnection = new HubConnectionBuilder()
             .WithUrl(hubUrl, options =>

@@ -81,9 +81,6 @@ namespace ChatAppAPI
                 options.MultipartBodyLengthLimit = 5 * 1024 * 1024; // 5 MB
             });
 
-            // Configure CORS to allow specific origin and credentials
-            
-
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerDocumentation();
@@ -112,8 +109,6 @@ namespace ChatAppAPI
 
             app.UseRouting();
 
-            //app.UseCors("AllowSpecificOrigin"); // Apply the CORS policy
-
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -122,8 +117,7 @@ namespace ChatAppAPI
             app.UseStaticFiles();
 
             app.MapControllers();
-            app.MapHub<ChatHub>("/Application/Hubs/ChatHub");
-            app.MapFallbackToFile("index.html");
+            app.MapHub<ChatHub>("/Application/Hubs/chatHub");
 
             app.Run();
         }

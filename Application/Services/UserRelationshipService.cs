@@ -5,6 +5,7 @@ using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using Utilities;
 
 namespace Application.Services
@@ -14,19 +15,22 @@ namespace Application.Services
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
         private readonly INotificationService notificationService;
+        private readonly UserManager<AppUser> userManager;
 
-        public UserRelationshipService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService)
+        public UserRelationshipService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService
+            , UserManager<AppUser> userManager)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.notificationService = notificationService;
+            this.userManager = userManager;
         }
 
         public async Task<ServiceResult> BlockUserAsync(string userId, string blockedUserId)
         {
             var (orderedUseId1, orderedUserId2) = UserHelpers.GetOrderedUserIds(userId, blockedUserId);
 
-            var relationship = await unitOfWork.UserRelationships.GetFriendshipAsync(userId, blockedUserId);
+            var relationship = await unitOfWork.UserRelationshipRepo.GetFriendshipAsync(userId, blockedUserId);
 
             if (relationship is null)
             {
@@ -39,14 +43,14 @@ namespace Application.Services
                     ActionUserId = userId
                 };
 
-                await unitOfWork.UserRelationships.AddAsync(relationship);
+                await unitOfWork.UserRelationshipRepo.AddAsync(relationship);
             }
             else
             {
                 relationship.Status = RelationshipStatusEnum.Blocked;
                 relationship.ActionUserId = userId;
 
-                unitOfWork.UserRelationships.Update(relationship);
+                unitOfWork.UserRelationshipRepo.Update(relationship);
             }
 
             await unitOfWork.CommitAsync();
@@ -56,7 +60,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> GetFriendRequestsAsync(string userId, int pageNubmer, int pageSize)
         {
-            var requests = await unitOfWork.UserRelationships.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
+            var requests = await unitOfWork.UserRelationshipRepo.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
 
             var requestsDTO = mapper.Map<IEnumerable<FriendRequestDTO>>(requests);
 
@@ -65,7 +69,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> GetFriendsAsync(string userId, int pageNubmer, int pageSize)
         {
-            var friends = await unitOfWork.UserRelationships.GetFriendsAsync(userId, pageNubmer, pageSize);
+            var friends = await unitOfWork.UserRelationshipRepo.GetFriendsAsync(userId, pageNubmer, pageSize);
 
             var friendsDTO = mapper.Map<List<RelationMemberDTO>>(friends, opts =>
             {
@@ -79,12 +83,12 @@ namespace Application.Services
         {
             var (orderedUserId1, orderedUserId2) = UserHelpers.GetOrderedUserIds(userId, friendUserId);
 
-            var relationship = await unitOfWork.UserRelationships.GetFriendshipAsync(orderedUserId1, orderedUserId2);
+            var relationship = await unitOfWork.UserRelationshipRepo.GetFriendshipAsync(orderedUserId1, orderedUserId2);
 
             if (relationship is null || relationship.Status is not RelationshipStatusEnum.Accepted)
                 return new ServiceResult(false, ["Users are not friends"]);
 
-            await unitOfWork.UserRelationships.RemoveAsync(r => r.Id == relationship.Id);
+            await unitOfWork.UserRelationshipRepo.RemoveAsync(r => r.Id == relationship.Id);
             await unitOfWork.CommitAsync();
 
             return new ServiceResult(true, data: "Friend was removed");
@@ -92,7 +96,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> RespondToFriendRequestAsync(int requestId, string responderUserId, string action)
         {
-            var relationship = await unitOfWork.UserRelationships.GetSingleAsync(r => r.Id == requestId);
+            var relationship = await unitOfWork.UserRelationshipRepo.GetSingleAsync(r => r.Id == requestId);
 
             if (relationship is null || relationship.Status is not RelationshipStatusEnum.Pending)
                 return new ServiceResult(false, ["Request does not exist"]);
@@ -105,7 +109,7 @@ namespace Application.Services
                 relationship.Status = RelationshipStatusEnum.Accepted;
                 relationship.ActionUserId = responderUserId;
 
-                unitOfWork.UserRelationships.Update(relationship);
+                unitOfWork.UserRelationshipRepo.Update(relationship);
 
                 var senderUserId = relationship.User1Id == responderUserId ? relationship.User2Id : relationship.User1Id;
                 var notification = new Notification
@@ -136,7 +140,7 @@ namespace Application.Services
                 relationship.Status = RelationshipStatusEnum.Declined;
                 relationship.ActionUserId = responderUserId;
 
-                await unitOfWork.UserRelationships.RemoveAsync(r => r.Id == relationship.Id);
+                await unitOfWork.UserRelationshipRepo.RemoveAsync(r => r.Id == relationship.Id);
                 await unitOfWork.CommitAsync();
 
                 return new ServiceResult(true, data: "Request was Declined");
@@ -152,7 +156,7 @@ namespace Application.Services
 
             var (orderedUserId1, orderedUserId2) = UserHelpers.GetOrderedUserIds(senderUserId, recipientUserId);
 
-            var existingFriendship = await unitOfWork.UserRelationships.GetFriendshipAsync(orderedUserId1, orderedUserId2);
+            var existingFriendship = await unitOfWork.UserRelationshipRepo.GetFriendshipAsync(orderedUserId1, orderedUserId2);
 
             if (existingFriendship is not null)
             {
@@ -175,7 +179,7 @@ namespace Application.Services
                 ActionUserId = senderUserId
             };
 
-            await unitOfWork.UserRelationships.AddAsync(friendship);
+            await unitOfWork.UserRelationshipRepo.AddAsync(friendship);
 
             var notification = new Notification
             {
@@ -205,12 +209,12 @@ namespace Application.Services
         {
             var (orderedUserId1, orderedUserId2) = UserHelpers.GetOrderedUserIds(userId, blockedUserId);
 
-            var relationship = await unitOfWork.UserRelationships.GetFriendshipAsync(orderedUserId1, orderedUserId2);
+            var relationship = await unitOfWork.UserRelationshipRepo.GetFriendshipAsync(orderedUserId1, orderedUserId2);
 
             if (relationship is null || relationship.Status is not RelationshipStatusEnum.Blocked)
                 return new ServiceResult(false, ["User is not blocked"]);
 
-            await unitOfWork.UserRelationships.RemoveAsync(r => r.Id == relationship.Id);
+            await unitOfWork.UserRelationshipRepo.RemoveAsync(r => r.Id == relationship.Id);
             await unitOfWork.CommitAsync();
 
             return new ServiceResult(true, data: "User was Unblocked");
@@ -218,7 +222,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> GetBlockedUsers(string userId, int pageNubmer, int pageSize)
         {
-            var blockedUsers = await unitOfWork.UserRelationships.GetBlockedUsersAsync(userId, pageNubmer, pageSize);
+            var blockedUsers = await unitOfWork.UserRelationshipRepo.GetBlockedUsersAsync(userId, pageNubmer, pageSize);
 
             var blockedUsersDTO = mapper.Map<List<RelationMemberDTO>>(blockedUsers, opts =>
             {
