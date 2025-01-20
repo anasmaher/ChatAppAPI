@@ -23,8 +23,16 @@ namespace Infrastructure.Data
         }
 
         public DbSet<AppUser> Users { get; set; }
+
         public DbSet<TokenModel> Tokens { get; set; }
+
         public DbSet<UserRelationship> Friendships { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<ConversationMember> ConversationMembers { get; set; }
+
+
     }
 }

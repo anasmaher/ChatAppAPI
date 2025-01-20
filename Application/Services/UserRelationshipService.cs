@@ -47,6 +47,14 @@ namespace Application.Services
             }
             else
             {
+                if (relationship.Status == RelationshipStatusEnum.Blocked)
+                {
+                    if (relationship.ActionUserId == userId)
+                        return new ServiceResult(false, ["You already blocked this user"]);
+                    else
+                        return new ServiceResult(false, ["You cant block a user that has blocked you"]);
+                }
+
                 relationship.Status = RelationshipStatusEnum.Blocked;
                 relationship.ActionUserId = userId;
 

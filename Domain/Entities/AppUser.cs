@@ -18,5 +18,6 @@ namespace Domain.Entities
 
         public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
 
+        public virtual List<ConversationMember> Conversations { get; set; }
     }
 }

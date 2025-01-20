@@ -42,7 +42,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-all-users")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin,Owner")]
         public async Task<IActionResult> GetAllUsers(int pageNubmer = 1, int pageSize = 10)
         {
             var res = await adminService.GetAllUsersAsync(pageNubmer, pageSize);
