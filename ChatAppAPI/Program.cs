@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ChatApp.ChatAppAPI.Filters;
 using ChatAppAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Application.Hubs;
 
 namespace ChatAppAPI
 {
@@ -29,6 +31,21 @@ namespace ChatAppAPI
                 hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(10);
                 hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(5);
             });
+
+            builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    builder
+                        .WithOrigins("http://169.254.97.66:8000") // Update with your client's origin
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+
 
             // Custom response
             builder.Services.AddControllers(options =>
@@ -106,8 +123,10 @@ namespace ChatAppAPI
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
+
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -116,8 +135,11 @@ namespace ChatAppAPI
 
             app.UseStaticFiles();
 
-            app.MapControllers();
-            app.MapHub<ChatHub>("/Application/Hubs/chatHub");
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/Application/Hubs/ChatHub");
+            });
 
             app.Run();
         }

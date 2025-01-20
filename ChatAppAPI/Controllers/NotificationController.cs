@@ -7,7 +7,6 @@ namespace ChatAppAPI.Controllers
 {
     [Route("api/Notification")]
     [ApiController]
-    [Authorize]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService notificationService;
