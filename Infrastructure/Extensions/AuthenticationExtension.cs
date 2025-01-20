@@ -142,7 +142,7 @@ namespace Infrastructure.Extensions
 
                         // If the request is for the SignalR hub
                         var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/Application/Hubs/ChatHub"))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;

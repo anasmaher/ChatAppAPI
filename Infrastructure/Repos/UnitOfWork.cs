@@ -6,14 +6,27 @@ namespace Infrastructure.Repos
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext dbContext;
-        public IUserRelationshipRepo UserRelationshipRepo { get; private set; }
-        public INotificationRepo NotificationRepo { get; private set; }
 
-        public UnitOfWork(AppDbContext dbContext, IUserRelationshipRepo userRelationshipRepo, INotificationRepo NotificationRepo)
+        public IConversationMemberRepo ConversationMemberRepo { get; }
+        public IMessageRepo MessageRepo { get; }
+        public IUserRelationshipRepo UserRelationshipRepo { get; }
+        public INotificationRepo NotificationRepo { get; }
+        public IConversationRepo ConversationRepo { get; }
+
+        public UnitOfWork(AppDbContext dbContext,
+            IUserRelationshipRepo userRelationshipRepo,
+            INotificationRepo notificationRepo,
+            IMessageRepo messageRepo,
+            IConversationMemberRepo conversationMemberRepo,
+            IConversationRepo conversationRepo
+        )
         {
             this.dbContext = dbContext;
-            this.UserRelationshipRepo = userRelationshipRepo;
-            this.NotificationRepo = NotificationRepo;
+            UserRelationshipRepo = userRelationshipRepo;
+            NotificationRepo = notificationRepo;
+            MessageRepo = messageRepo;
+            ConversationMemberRepo = conversationMemberRepo;
+            ConversationRepo = conversationRepo;
         }
 
         public async Task CommitAsync()

@@ -1,5 +1,5 @@
 ﻿using Application.DTOs.ResultsDTOs;
-using Application.DTOs.SignalrDTOs;
+using Application.DTOs.NotificationDTOs;
 using Application.Interfaces.ReposInterfaces;
 using Application.Interfaces.ServicesInterfaces;
 using AutoMapper;

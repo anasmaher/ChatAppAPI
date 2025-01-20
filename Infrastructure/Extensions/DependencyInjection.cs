@@ -20,6 +20,10 @@ namespace Infrastructure.Extensions
             services.AddScoped<IUserRelationshipService, UserRelationshipService>();
             services.AddScoped<IUserRelationshipRepo, UserRelationshipRepo>();
             services.AddScoped<INotificationRepo, NotificationRepo>();
+            services.AddScoped<IConversationService, ConversationService>();
+            services.AddScoped<IMessageRepo, MessageRepo>();
+            services.AddScoped<IConversationMemberRepo, ConversationMemberRepo>();
+            services.AddScoped<IConversationRepo, ConversationRepo>();
 
             return services;
         }

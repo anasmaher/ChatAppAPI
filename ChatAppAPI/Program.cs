@@ -39,7 +39,7 @@ namespace ChatAppAPI
                 options.AddPolicy("CorsPolicy", builder =>
                 {
                     builder
-                        .WithOrigins("http://169.254.97.66:8000") // Update with your client's origin
+                        .WithOrigins("http://169.254.97.66:9000") // Update with your client's origin
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();

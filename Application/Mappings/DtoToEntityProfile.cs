@@ -1,6 +1,7 @@
 ﻿using Application.DTOs.AdminDTOs;
+using Application.DTOs.ConversationDTOs;
 using Application.DTOs.RelationshipDTOs;
-using Application.DTOs.SignalrDTOs;
+using Application.DTOs.NotificationDTOs;
 using Application.DTOs.UserDTOs;
 using AutoMapper;
 using Domain.Entities;
@@ -43,7 +44,16 @@ namespace Application.Mappings
                 }));
 
             CreateMap<Notification, NotificationDTO>()
-                .ForMember(dest => dest.SenderUsername, opt => opt.MapFrom(src => src.SenderUser.UserName));
+                .ForMember(dest => dest.SenderFirstName, opt => opt.MapFrom(src => src.SenderUser.FirstName))
+                .ForMember(dest => dest.SenderLastName, opt => opt.MapFrom(src => src.SenderUser.LastName));
+
+            CreateMap<Message, MessageDTO>()
+                .ForMember(dest => dest.SenderFirstName, opt => opt.MapFrom(src => src.Sender.FirstName))
+                .ForMember(dest => dest.SenderLastName, opt => opt.MapFrom(src => src.Sender.LastName));
+
+            CreateMap<SendMessageDTO, Message>();
+
+            CreateMap<Conversation, ConversationDTO>().ReverseMap();
         }
     }
 }
