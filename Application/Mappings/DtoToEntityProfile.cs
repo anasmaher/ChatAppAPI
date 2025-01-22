@@ -63,6 +63,8 @@ namespace Application.Mappings
 
             CreateMap<Conversation, GroupDTO>()
                 .ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.Members.Select(cm => cm.User)));
+
+            CreateMap<ConversationMember, MemberDTO>();
         }
     }
 }

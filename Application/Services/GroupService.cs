@@ -1,4 +1,5 @@
-﻿using Application.DTOs.GroupDTOs;
+﻿using Application.DTOs.ConversationDTOs;
+using Application.DTOs.GroupDTOs;
 using Application.DTOs.ResultsDTOs;
 using Application.Interfaces.ReposInterfaces;
 using Application.Interfaces.ServicesInterfaces;
@@ -35,7 +36,9 @@ namespace Application.Services
             await unitOfWork.ConversationMemberRepo.AddAsync(member);
             await unitOfWork.CommitAsync();
 
-            return new ServiceResult(true, data: member);
+            var memberDTO = mapper.Map<MemberDTO>(member);
+
+            return new ServiceResult(true, data: memberDTO);
         }
 
         public async Task<ServiceResult> CreateGroupAsync(CreateGroupDTO model, string creatorId)
@@ -68,7 +71,9 @@ namespace Application.Services
 
             await unitOfWork.CommitAsync();
 
-            return new ServiceResult(true, data: model);
+            var convoDTO = mapper.Map<ConversationDTO>(convo);
+
+            return new ServiceResult(true, data: convoDTO);
         }
 
         public async Task<ServiceResult> GetGroupAsync(Guid groupId)
@@ -83,9 +88,19 @@ namespace Application.Services
             return new ServiceResult(true, data: groupDto);
         }
 
-        public Task<ServiceResult> RemoveMemberAsync(Guid groupId, string memberId)
+        public async Task<ServiceResult> RemoveMemberAsync(Guid groupId, string memberId)
         {
-            throw new NotImplementedException();
+            var member = await unitOfWork.ConversationMemberRepo
+                .GetSingleAsync(cm => cm.UserId == memberId && cm.ConversationId == groupId);
+
+            if (member is null)
+                return new ServiceResult(false, ["Member not found in group."]);
+
+            await unitOfWork.ConversationMemberRepo.RemoveAsync(m => m.UserId == member.UserId);
+            await unitOfWork.CommitAsync();
+
+            var memberDTO = mapper.Map<MemberDTO>(member);
+            return new ServiceResult(true, data: memberDTO);
         }
     }
 }
