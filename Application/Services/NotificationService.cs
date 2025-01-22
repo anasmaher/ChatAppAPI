@@ -54,7 +54,7 @@ namespace Application.Services
             if (notification is not null && notification.UserId == userId)
             {
                 notification.IsRead = true;
-                unitOfWork.NotificationRepo.Update(notification);
+                unitOfWork.NotificationRepo.UpdateAsync(notification);
 
                 await unitOfWork.CommitAsync();
             }

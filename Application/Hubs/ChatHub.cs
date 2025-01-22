@@ -10,43 +10,39 @@ namespace ChatAppAPI.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        private readonly IConversationService _messageService;
+        private readonly IConversationService messageService;
         private readonly IUnitOfWork unitOfWork;
 
         public ChatHub(IConversationService messageService, IUnitOfWork unitOfWork)
         {
-            _messageService = messageService;
+            messageService = messageService;
             this.unitOfWork = unitOfWork;
         }
 
-        public async Task SendMessage(SendMessageDTO model)
-        {
-            var senderId = Context.UserIdentifier;
+        //public async Task SendMessage(SendMessageDTO model)
+        //{
+        //    var senderId = Context.UserIdentifier;
 
-            // Save the message using the message service
-            var result = await _messageService.SendMessageAsync(senderId, model);
+        //    var result = await messageService.SendMessageAsync(senderId, model);
 
-            if (result.success)
-            {
-                var messageDto = result.data as MessageDTO;
+        //    if (result.success)
+        //    {
+        //        var messageDto = result.data as MessageDTO;
 
-                // Broadcast the message to all clients in the conversation group
-                await Clients.Group(model.ConversationId.ToString()).SendAsync("ReceiveMessage", messageDto);
-            }
-            else
-            {
-                // Optionally handle errors
-                // For example, you could send an error message back to the sender
-                await Clients.Caller.SendAsync("Error", result.Errors);
-            }
-        }
+        //        // Broadcast the message to all clients in the conversation group
+        //        await Clients.Group(model.ConversationId.ToString()).SendAsync("ReceiveMessage", messageDto);
+        //    }
+        //    else
+        //    {
+        //        await Clients.Caller.SendAsync("Error", result.Errors);
+        //    }
+        //}
 
         public async Task JoinGroup(Guid conversationId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId.ToString());
 
-            // Optionally, send a message to the group that someone has joined
-            await Clients.Group(conversationId.ToString()).SendAsync("UserJoined", Context.UserIdentifier);
+            //await Clients.Group(conversationId.ToString()).SendAsync("UserJoined", Context.UserIdentifier);
         }
 
         public override async Task OnConnectedAsync()

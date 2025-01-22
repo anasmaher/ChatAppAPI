@@ -7,8 +7,14 @@ namespace Application.Interfaces.ServicesInterfaces
     {
         Task<ServiceResult> SendMessageAsync(string senderId, SendMessageDTO model);
 
-        Task<ServiceResult> GetMessagesForConversationAsync(Guid conversationId);
+        Task<ServiceResult> GetMessagesForConversationAsync(Guid conversationId, string userId);
 
         Task<ServiceResult> GetOrCreateConversationAsync(string userId1, string userId2);
+
+        Task<ServiceResult> DeleteMessageAsync(Guid convoId, int messageId, string userId);
+
+        Task<ServiceResult> MarkMessageAsReadAsync(int messageId, string userId);
+
+        Task<ServiceResult> EditMessageAsync(EditMessageDTO model);
     }
 }

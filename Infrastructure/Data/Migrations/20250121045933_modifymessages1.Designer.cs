@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250121045933_modifymessages1")]
+    partial class modifymessages1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +84,10 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ShowsForUsersIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("content")
                         .IsRequired()
@@ -424,9 +431,6 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<int?>("Messageid")
-                        .HasColumnType("int");
-
                     b.Property<string>("PhotoFilePath")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -441,8 +445,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("TokenVersion")
                         .HasColumnType("int");
-
-                    b.HasIndex("Messageid");
 
                     b.HasDiscriminator().HasValue("AppUser");
                 });
@@ -582,23 +584,11 @@ namespace Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entities.AppUser", b =>
-                {
-                    b.HasOne("Domain.Entities.Message", null)
-                        .WithMany("ShowsForUsers")
-                        .HasForeignKey("Messageid");
-                });
-
             modelBuilder.Entity("Domain.Entities.Conversation", b =>
                 {
                     b.Navigation("Members");
 
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Message", b =>
-                {
-                    b.Navigation("ShowsForUsers");
                 });
 
             modelBuilder.Entity("Domain.Entities.AppUser", b =>

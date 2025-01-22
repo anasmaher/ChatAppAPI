@@ -38,7 +38,7 @@ namespace Infrastructure.Repos
             dbSet.Remove(obj);
         }
 
-        public async Task<T> Update(T Entitiy)
+        public async Task<T> UpdateAsync(T Entitiy)
         {
             dbSet.Update(Entitiy);
             return Entitiy;

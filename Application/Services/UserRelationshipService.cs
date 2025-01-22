@@ -58,7 +58,7 @@ namespace Application.Services
                 relationship.Status = RelationshipStatusEnum.Blocked;
                 relationship.ActionUserId = userId;
 
-                unitOfWork.UserRelationshipRepo.Update(relationship);
+                unitOfWork.UserRelationshipRepo.UpdateAsync(relationship);
             }
 
             await unitOfWork.CommitAsync();
@@ -117,7 +117,7 @@ namespace Application.Services
                 relationship.Status = RelationshipStatusEnum.Accepted;
                 relationship.ActionUserId = responderUserId;
 
-                unitOfWork.UserRelationshipRepo.Update(relationship);
+                unitOfWork.UserRelationshipRepo.UpdateAsync(relationship);
 
                 var senderUserId = relationship.User1Id == responderUserId ? relationship.User2Id : relationship.User1Id;
                 var notification = new Notification

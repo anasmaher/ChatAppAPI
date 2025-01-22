@@ -10,6 +10,6 @@ namespace Application.Interfaces.ReposInterfaces
 
         Task RemoveAsync(Expression<Func<T, bool>> filter);
 
-        Task<T> Update(T Entity);
+        Task<T> UpdateAsync(T Entity);
     }
 }

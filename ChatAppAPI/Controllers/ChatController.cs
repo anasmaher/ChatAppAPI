@@ -29,7 +29,7 @@ namespace ChatAppAPI.Controllers
         [HttpPost("send/{ConversationId}")]
         public async Task<IActionResult> SendMessage(Guid ConversationId, SendMesaageVM model)
         {
-            var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var modelDTO = mapper.Map<SendMessageDTO>(model);
             modelDTO.ConversationId = ConversationId;
 
@@ -45,14 +45,15 @@ namespace ChatAppAPI.Controllers
         [HttpGet("messages/{conversationId}")]
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
-            var messages = await messageService.GetMessagesForConversationAsync(conversationId);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var messages = await messageService.GetMessagesForConversationAsync(conversationId, userId);
             return Ok(messages.data);
         }
 
         [HttpPost("get-or-create/{recpId}")]
         public async Task<IActionResult> GetOrCreateConversation(string recpId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await conversationService.GetOrCreateConversationAsync(userId, recpId);
 
@@ -60,6 +61,47 @@ namespace ChatAppAPI.Controllers
                 return Ok(result.data);
             
             return BadRequest(result.Errors);
+        }
+
+        [HttpDelete("delete-message")]
+        public async Task<IActionResult> DeleteMessage(DeleteMessageDTO model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await conversationService.DeleteMessageAsync(model.convoId, model.messageId, userId);
+
+            if (res.success)
+                return Ok(res.data);
+
+            return BadRequest(res.Errors);
+        }
+
+        [HttpPost("mark-as-read/{messageId}")]
+        public async Task<IActionResult> MarkAsRead(int messageId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await conversationService.MarkMessageAsReadAsync(messageId, userId);
+            
+            if (res.success)
+                return Ok(res.data);    
+
+            return BadRequest(res.Errors);
+        }
+
+        [HttpPut("edit-message/{messageId}/{convoId}")]
+        public async Task<IActionResult> EditMessage(int messageId, Guid convoId, EditMessageVM model)
+        {
+            var modelDTO = mapper.Map<EditMessageDTO>(model);
+            modelDTO.messageId = messageId;
+            modelDTO.convoId = convoId;
+
+            var res = await conversationService.EditMessageAsync(modelDTO);
+
+            if (res.success)
+                return Ok(res.data);
+
+            return BadRequest(res.Errors);
         }
     }
 }

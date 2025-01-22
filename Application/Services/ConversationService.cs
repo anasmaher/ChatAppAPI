@@ -7,6 +7,7 @@ using ChatAppAPI.Hubs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using System.Reflection;
 
 namespace Application.Services
 {
@@ -25,12 +26,28 @@ namespace Application.Services
             this.userManager = userManager;
         }
 
-        public async Task<ServiceResult> GetMessagesForConversationAsync(Guid conversationId)
+        public async Task<ServiceResult> MarkMessageAsReadAsync(int messageId, string userId)
+        {
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == messageId);
+
+            msg.IsRead = true;
+
+            await unitOfWork.MessageRepo.UpdateAsync(msg);
+            await unitOfWork.CommitAsync();
+
+            await hubContext.Clients.Client(userId).SendAsync("markAsRead", msg);
+
+            return new ServiceResult(true, data: "message was marked read");
+        }
+
+        public async Task<ServiceResult> GetMessagesForConversationAsync(Guid conversationId, string userId)
         {
             var convo = await unitOfWork.ConversationRepo
                 .GetSingleAsync(c => c.Id == conversationId);
 
-            var msgsDTO = mapper.Map<List<MessageDTO>>(convo.Messages);
+            var msgs = convo.Messages;
+
+            var msgsDTO = mapper.Map<List<MessageDTO>>(msgs);
 
             return new ServiceResult(true, data: msgsDTO);
         }
@@ -103,6 +120,9 @@ namespace Application.Services
                 SentAt = DateTime.Now,
                 Sender = await userManager.FindByIdAsync(senderId)
             };
+            
+            foreach (var mem in convo.Conversation.Members)
+                msg.ShowsForUsers.Add(mem.User);
 
             await unitOfWork.MessageRepo.AddAsync(msg);
             await unitOfWork.CommitAsync();
@@ -112,6 +132,48 @@ namespace Application.Services
             await hubContext.Clients.Group(model.ConversationId.ToString()).SendAsync("ReceiveMessage", msgDTO);
 
             return new ServiceResult(true, data: msgDTO);
+        }
+
+        public async Task<ServiceResult> DeleteMessageAsync(Guid convoId, int messageId, string userId)
+        {
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == messageId);
+
+            if (msg is null)
+                return new ServiceResult(false, ["Message does not exist"]);
+
+            // todo: Check if the user is authorized to delete the message for all
+            // if (message.SenderId != userId && !await IsUserAdminAsync(userId))
+            // {
+            //     return new ServiceResult(
+            //         success: false, 
+            //         errors: new[] { "You do not have permission to delete this message for all users." }
+            //     );
+            // }
+
+            await unitOfWork.MessageRepo.RemoveAsync(m => m.id == messageId);
+            await unitOfWork.CommitAsync();
+
+            var msgDTO = mapper.Map<MessageDTO>(msg);
+            await hubContext.Clients.Group(convoId.ToString()).SendAsync("RemoveMessage", msgDTO);
+
+            return new ServiceResult(true, data: "Message was removed for all users in the conversation");
+        }
+
+        public async Task<ServiceResult> EditMessageAsync(EditMessageDTO model)
+        {
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == model.messageId);
+
+            if (msg is null)
+                return new ServiceResult(false, ["Message does not exist or user does not have the right to remove this message"]);
+
+            msg.content = model.content;
+
+            await unitOfWork.MessageRepo.UpdateAsync(msg);
+            await unitOfWork.CommitAsync();
+
+            await hubContext.Clients.Group(model.convoId.ToString()).SendAsync("editMessage", model);
+
+            return new ServiceResult(true, data: "Message was edited");
         }
     }
 }

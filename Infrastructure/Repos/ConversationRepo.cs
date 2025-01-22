@@ -14,6 +14,13 @@ namespace Infrastructure.Repos
             this.dbContext = dbContext;
         }
 
+        public async Task<Conversation> GetGroupWithMembersAsync(Guid groupId)
+        {
+            return await dbContext.Conversations.Include(c => c.Members)
+                .ThenInclude(cm => cm.User)
+                .FirstOrDefaultAsync(c => c.IsGroup && c.Id == groupId);
+        }
+
         public async Task<Conversation> GetPrivateConversationAsync(string userId1, string userId2)
         {
             if (string.IsNullOrEmpty(userId1) || string.IsNullOrEmpty(userId2))

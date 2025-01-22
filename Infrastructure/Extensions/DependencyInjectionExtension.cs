@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Extensions
 {
-    public static class DependencyInjection
+    public static class DependencyInjectionExtension
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {

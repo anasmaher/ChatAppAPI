@@ -20,6 +20,7 @@ namespace ChatAppAPI.Mappings
             CreateMap<ChangePasswordVM, ChangePasswordDTO>();
             CreateMap<ChangeRoleVM, ChangeRoleDTO>();
             CreateMap<SendMesaageVM, SendMessageDTO>();
+            CreateMap<EditMessageVM, EditMessageDTO>();
 
             CreateMap<UserDTO, UserVM>();
         }

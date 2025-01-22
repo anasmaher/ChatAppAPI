@@ -10,7 +10,7 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual List<Message> Messages { get; set; }
-        public virtual List<ConversationMember> Members { get; set; }
+        public virtual ICollection<Message> Messages { get; set; }
+        public virtual ICollection<ConversationMember> Members { get; set; } = new List<ConversationMember>();
     }
 }

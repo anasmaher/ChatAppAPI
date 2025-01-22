@@ -5,6 +5,7 @@ using Application.DTOs.NotificationDTOs;
 using Application.DTOs.UserDTOs;
 using AutoMapper;
 using Domain.Entities;
+using Application.DTOs.GroupDTOs;
 
 namespace Application.Mappings
 {
@@ -54,6 +55,14 @@ namespace Application.Mappings
             CreateMap<SendMessageDTO, Message>();
 
             CreateMap<Conversation, ConversationDTO>().ReverseMap();
+
+            CreateMap<EditMessageDTO, MessageDTO>();
+
+            CreateMap<CreateGroupDTO, Conversation>()
+                .ForMember(dest => dest.IsGroup, opt => opt.MapFrom(src => true));
+
+            CreateMap<Conversation, GroupDTO>()
+                .ForMember(dest => dest.Members, opt => opt.MapFrom(src => src.Members.Select(cm => cm.User)));
         }
     }
 }

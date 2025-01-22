@@ -7,5 +7,7 @@
 
         public virtual AppUser User { get; set; }
         public virtual Conversation Conversation { get; set; }
+
+        public bool IsAdmin { get; set; }
     }
 }

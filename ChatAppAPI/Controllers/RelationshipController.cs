@@ -71,7 +71,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpPost("remove-friend/{friendId}")]
-        public async Task<IActionResult> RespondToRequest(string friendId)
+        public async Task<IActionResult> RemoveFriend(string friendId)
         {
             var CurrentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -84,11 +84,11 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpGet("get-requests")]
-        public async Task<IActionResult> GetFriendRequests(int pageNubmer, int pageSize)
+        public async Task<IActionResult> GetFriendRequests(int pageNubmer = 1, int pageSize = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var res = await relationshipService.GetFriendRequestsAsync(userId, pageNubmer = 1, pageSize = 10);
+            var res = await relationshipService.GetFriendRequestsAsync(userId, pageNubmer, pageSize);
 
             if (!res.success)
                 return BadRequest(res.data);
