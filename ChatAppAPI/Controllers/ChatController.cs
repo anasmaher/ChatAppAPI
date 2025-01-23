@@ -15,13 +15,11 @@ namespace ChatAppAPI.Controllers
     [Authorize]
     public class ChatController : ControllerBase
     {
-        private readonly IConversationService messageService;
         private readonly IMapper mapper;
         private readonly IConversationService conversationService;
 
-        public ChatController(IConversationService messageService, IMapper mapper, IConversationService conversationService)
+        public ChatController(IMapper mapper, IConversationService conversationService)
         {
-            this.messageService = messageService;
             this.mapper = mapper;
             this.conversationService = conversationService;
         }
@@ -33,7 +31,7 @@ namespace ChatAppAPI.Controllers
             var modelDTO = mapper.Map<SendMessageDTO>(model);
             modelDTO.ConversationId = ConversationId;
 
-            var result = await messageService.SendMessageAsync(senderId, modelDTO);
+            var result = await conversationService.SendMessageAsync(senderId, modelDTO);
 
             if (result.success)
                 return Ok(result.data);
@@ -46,7 +44,7 @@ namespace ChatAppAPI.Controllers
         public async Task<IActionResult> GetMessages(Guid conversationId)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var messages = await messageService.GetMessagesForConversationAsync(conversationId, userId);
+            var messages = await conversationService.GetMessagesForConversationAsync(conversationId, userId);
             return Ok(messages.data);
         }
 
@@ -97,6 +95,19 @@ namespace ChatAppAPI.Controllers
             modelDTO.convoId = convoId;
 
             var res = await conversationService.EditMessageAsync(modelDTO);
+
+            if (res.success)
+                return Ok(res.data);
+
+            return BadRequest(res.Errors);
+        }
+
+        [HttpGet("get-all")]
+        public async Task<IActionResult> GetAllConversations()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await conversationService.GetAllConversationsAsync(userId);
 
             if (res.success)
                 return Ok(res.data);

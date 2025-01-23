@@ -7,7 +7,6 @@ using ChatAppAPI.Hubs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
-using System.Reflection;
 
 namespace Application.Services
 {
@@ -28,7 +27,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> MarkMessageAsReadAsync(int messageId, string userId)
         {
-            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == messageId);
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.Id == messageId);
 
             msg.IsRead = true;
 
@@ -70,7 +69,6 @@ namespace Application.Services
             {
                 Id = Guid.NewGuid(),
                 Name = "New",
-                IsGroup = false,
                 CreatedAt = DateTime.UtcNow,
                 Members = new List<ConversationMember>()
             };
@@ -120,9 +118,6 @@ namespace Application.Services
                 SentAt = DateTime.Now,
                 Sender = await userManager.FindByIdAsync(senderId)
             };
-            
-            foreach (var mem in convo.Conversation.Members)
-                msg.ShowsForUsers.Add(mem.User);
 
             await unitOfWork.MessageRepo.AddAsync(msg);
             await unitOfWork.CommitAsync();
@@ -136,21 +131,12 @@ namespace Application.Services
 
         public async Task<ServiceResult> DeleteMessageAsync(Guid convoId, int messageId, string userId)
         {
-            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == messageId);
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.Id == messageId && m.SenderId == userId);
 
             if (msg is null)
                 return new ServiceResult(false, ["Message does not exist"]);
 
-            // todo: Check if the user is authorized to delete the message for all
-            // if (message.SenderId != userId && !await IsUserAdminAsync(userId))
-            // {
-            //     return new ServiceResult(
-            //         success: false, 
-            //         errors: new[] { "You do not have permission to delete this message for all users." }
-            //     );
-            // }
-
-            await unitOfWork.MessageRepo.RemoveAsync(m => m.id == messageId);
+            await unitOfWork.MessageRepo.RemoveAsync(m => m.Id == messageId);
             await unitOfWork.CommitAsync();
 
             var msgDTO = mapper.Map<MessageDTO>(msg);
@@ -161,7 +147,7 @@ namespace Application.Services
 
         public async Task<ServiceResult> EditMessageAsync(EditMessageDTO model)
         {
-            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.id == model.messageId);
+            var msg = await unitOfWork.MessageRepo.GetSingleAsync(m => m.Id == model.messageId);
 
             if (msg is null)
                 return new ServiceResult(false, ["Message does not exist or user does not have the right to remove this message"]);
@@ -174,6 +160,20 @@ namespace Application.Services
             await hubContext.Clients.Group(model.convoId.ToString()).SendAsync("editMessage", model);
 
             return new ServiceResult(true, data: "Message was edited");
+        }
+
+        public async Task<ServiceResult> GetAllConversationsAsync(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return new ServiceResult(false, ["User was not found"]);
+
+            var convos = await unitOfWork.ConversationRepo.GetAllAsync(userId);
+
+            await hubContext.Clients.Client(userId).SendAsync("ReceiveChatListUpdate", convos);
+
+            return new ServiceResult(true, data: convos);
         }
     }
 }

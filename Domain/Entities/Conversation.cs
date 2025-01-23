@@ -4,8 +4,6 @@
     {
         public Guid Id { get; set; }
 
-        public bool IsGroup { get; set; } = false;
-
         public string Name { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

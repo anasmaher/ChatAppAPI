@@ -14,11 +14,12 @@ namespace Infrastructure.Repos
             this.dbContext = dbContext;
         }
 
-        public async Task<Conversation> GetGroupWithMembersAsync(Guid groupId)
+        public async Task<List<Conversation>> GetAllAsync(string userId)
         {
-            return await dbContext.Conversations.Include(c => c.Members)
-                .ThenInclude(cm => cm.User)
-                .FirstOrDefaultAsync(c => c.IsGroup && c.Id == groupId);
+            return await dbContext.Conversations
+                .Include(c => c.Members)
+                .Where(c => c.Members.Any(cm => cm.UserId == userId))
+                .ToListAsync();
         }
 
         public async Task<Conversation> GetPrivateConversationAsync(string userId1, string userId2)
@@ -28,7 +29,6 @@ namespace Infrastructure.Repos
 
             var conversation = await dbContext.Conversations
                 .Include(c => c.Members)
-                .Where(c => !c.IsGroup && c.Members.Count == 2)
                 .Where(c => c.Members.Any(m => m.UserId == userId1) && c.Members.Any(m => m.UserId == userId2))
                 .FirstOrDefaultAsync();
 

@@ -103,7 +103,7 @@ namespace ChatAppAPI.Controllers
 
             if (!res.success)
             {
-                if (res.Errors.Contains("Incorrect password"))
+                if (res.Errors.Contains("Invalid credentials"))
                     return Unauthorized(res.Errors);
 
                 return BadRequest(res.Errors);
@@ -174,7 +174,7 @@ namespace ChatAppAPI.Controllers
 
             if (!res.success)
             {
-                if (res.Errors.Contains("User is not found"))
+                if (res.Errors.Contains("Invalid credentials"))
                     return NotFound(res.Errors);
 
                 return BadRequest(res.Errors);
@@ -195,7 +195,7 @@ namespace ChatAppAPI.Controllers
 
             if (!res.success)
             {
-                if (res.Errors.Contains("Incorrect data"))
+                if (res.Errors.Contains("Invalid credentials"))
                     return Unauthorized(res.Errors);
 
                 return BadRequest(res.Errors);

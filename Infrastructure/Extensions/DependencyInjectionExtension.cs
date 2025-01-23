@@ -45,7 +45,6 @@ namespace Infrastructure.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddTransient<IUrlService, UrlService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IGroupService, GroupService>();
 
             return services;
         }

@@ -2,7 +2,7 @@
 {
     public class Message
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
         public string content { get; set; }
 
@@ -15,7 +15,5 @@
 
         public virtual AppUser Sender { get; set; }
         public virtual Conversation Conversation { get; set; }
-
-        public virtual ICollection<AppUser> ShowsForUsers { get; set; } = new HashSet<AppUser>();
     }
 }

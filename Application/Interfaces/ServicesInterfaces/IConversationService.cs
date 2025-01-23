@@ -16,5 +16,7 @@ namespace Application.Interfaces.ServicesInterfaces
         Task<ServiceResult> MarkMessageAsReadAsync(int messageId, string userId);
 
         Task<ServiceResult> EditMessageAsync(EditMessageDTO model);
+
+        Task<ServiceResult> GetAllConversationsAsync(string userId);
     }
 }
