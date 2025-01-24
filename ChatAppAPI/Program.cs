@@ -1,13 +1,13 @@
+using Application.Hubs;
 using Application.Mappings;
+using ChatApp.ChatAppAPI.Filters;
+using ChatAppAPI.Hubs;
 using ChatAppAPI.Mappings;
 using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using ChatApp.ChatAppAPI.Filters;
-using ChatAppAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using Application.Hubs;
 
 namespace ChatAppAPI
 {
@@ -85,12 +85,7 @@ namespace ChatAppAPI
             builder.Services.AddAutoMapper(typeof(DtoToEntityProfile));
 
             // Add caching
-            builder.Services.AddOutputCache();
-
-            builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
-            {
-                options.TokenLifespan = TimeSpan.FromHours(3);  // Token is valid for 3 hours
-            });
+            builder.Services.AddMemoryCache();
 
             // max file size
             builder.Services.Configure<FormOptions>(options =>
@@ -130,8 +125,6 @@ namespace ChatAppAPI
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseOutputCache();
 
             app.UseStaticFiles();
 

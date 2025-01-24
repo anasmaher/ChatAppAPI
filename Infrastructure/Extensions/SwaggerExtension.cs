@@ -10,8 +10,20 @@ namespace Infrastructure.Extensions
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatApp API", Version = "v1" });
+                // Basic Swagger Doc setup
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ChatApp API",
+                    Version = "v1",
+                    Description = "An API for ChatApp",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Anas Al-Horigy",
+                        Email = "anas.elhorigy@gmail.com",
+                    }
+                });
 
+                // Security Definition
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -19,9 +31,10 @@ namespace Infrastructure.Extensions
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter your JWT token in the text input below.\r\n\r\nExample: \"Bearer eyJhb...\""
+                    Description = "Enter your JWT token below.\r\n\r\nExample: \"eyJhb...\""
                 });
 
+                // Security Requirement
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -33,16 +46,25 @@ namespace Infrastructure.Extensions
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
 
-                // Include XML comments if available
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
+                // Include XML comments from multiple projects
+                var xmlFiles = new[]
                 {
-                    c.IncludeXmlComments(xmlPath);
+                    "ChatAppAPI.xml",
+                };
+
+                var basePath = AppContext.BaseDirectory;
+
+                foreach (var xmlFile in xmlFiles)
+                {
+                    var xmlPath = Path.Combine(basePath, xmlFile);
+                    if (File.Exists(xmlPath))
+                    {
+                        c.IncludeXmlComments(xmlPath);
+                    }
                 }
             });
 

@@ -115,7 +115,7 @@ namespace Application.Services
                 content = model.Content,
                 SenderId = senderId,
                 ConversationId = model.ConversationId,
-                SentAt = DateTime.Now,
+                SentAt = DateTime.UtcNow,
                 Sender = await userManager.FindByIdAsync(senderId)
             };
 
@@ -171,9 +171,11 @@ namespace Application.Services
 
             var convos = await unitOfWork.ConversationRepo.GetAllAsync(userId);
 
-            await hubContext.Clients.Client(userId).SendAsync("ReceiveChatListUpdate", convos);
+            var convosDTO = mapper.Map<List<ConversationDTO>>(convos);
 
-            return new ServiceResult(true, data: convos);
+            await hubContext.Clients.Client(userId).SendAsync("ReceiveChatListUpdate", convosDTO);
+
+            return new ServiceResult(true, data: convosDTO);
         }
     }
 }
