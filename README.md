@@ -59,7 +59,3 @@ I have hosted my website using **MonsterAsp.net** , complemented by its robust c
 <br/>
 <h3>📞 Contact Information</h3>
 For any inquiries or support, please contact me at: <a href="mailto:anas.elhorigy@gmail.com">anas.elhorigy@gmail.com</a>
-
-<br/>
-<h3>📜 License Information</h3>
-© Copyright 2024 | All Rights Reserved by <a href="mailto:anas.elhorigy@gmail.com">anas.elhorigy@gmail.com</a>
