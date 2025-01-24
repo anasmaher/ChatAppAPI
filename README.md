@@ -4,9 +4,9 @@
 <h2>🚀 Application Features</h2>
 <ul>
     <li><strong>Real-time Communication: Instant messaging powered by SignalR hubs.</strong></li>
-    <li><strong>User Authentication: Registration, login, password reset, and role management.</strong></li>
+    <li><strong>User Authentication: Registration, login, login with google, password reset, and role management.</strong></li>
     <li><strong>Messaging: Send, edit, and delete messages in conversations.</strong></li>
-    <li><strong>Notifications: Real-time notifications for friend requests and messages.</strong></li>
+    <li><strong>Notifications: Real-time notifications for friend requests.</strong></li>
     <li><strong>Friendship Management: Handle friend requests and user relationships.</strong></li>
     <li><strong>Caching: Optimized performance with in-memory caching strategies.</strong></li>
     <li><strong>File Uploads: Support for profile picture uploads with validation.</strong></li>
