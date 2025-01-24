@@ -53,7 +53,7 @@ Clean Architecture is a software design philosophy that emphasizes the separatio
 
 <br/>
 <h2>🕸️ Hosting & Production</h2> 
-I'm hosted my website using **MonsterAsp.net**, complemented by its robust cloud database services.  
+I have hosted my website using **MonsterAsp.net** , complemented by its robust cloud database services.  
 🌐 Feel free to click <a href="http://chatappalhorigy.runasp.net/swagger/index.html">here</a> to explore the live API!<br/>
 
 <br/>
